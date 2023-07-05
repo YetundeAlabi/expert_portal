@@ -1,69 +1,73 @@
 from pytz import country_names
 
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
-from django.utils.crypto import get_random_string
-from phonenumber_field.modelfields import PhoneNumberField
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
-from base import constants
-from base.models import BaseModel, DeletableBaseModel
-from portal.models import Tribe, Squad
-# Create your models here.
 
-GENDER_CHOICES = [
-        (constants.FEMALE, "Female"),
-        (constants.MALE, "Male")
-    ]
+from base.managers import UserManager
+from base.constants import READ, CREATE, UPDATE, DELETE, SUCCESS, FAILED, LOGIN, LOGIN_FAILED, LOGOUT
 
-MARTIAL_STATUS_CHOICES = [
-    (constants.DIVORCED, "Divorced"),
-    (constants.MARRIED, "Married"),
-    (constants.SINGLE, "Single"),
-    (constants.WIDOWED, "Widowed"),
-]
-
-COUNTRY_CHOICES = [
-    (code, country) for code, country in country_names.items()
-]
-
-class Staff(BaseModel, AbstractUser):
+class User(AbstractBaseUser, PermissionsMixin):
+    """Custom user model """
+    email = models.EmailField(
+        verbose_name="email address", max_length=255, unique=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=True) #sign up required for only admin 
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
     
-    id = models.CharField(max_length=8, unique=True)
-    picture = models.ImageField(upload_to="accounts/media")
-    middle_name = models.CharField(max_length=150, blank=True, null=True)
-    date_of_birth = models.DateField()
-    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
-    martial_status = models.CharField(max_length=20, choices=MARTIAL_STATUS_CHOICES)
-    is_admin = models.BooleanField(default=False)
-    alias_email = models.EmailField(max_length=255)
-    tribe = models.ForeignKey(Tribe, on_delete=models.SET_NULL, null=True, related_name="staffs")
-    squad = models.ForeignKey(Squad, on_delete=models.SET_NULL, null=True, related_name="members")
-    role = models.CharField(max_length=255)
-    phone_number = PhoneNumberField()
-    work_phone = PhoneNumberField(blank=True)
-    city = models.CharField(max_length=100)
-    next_of_kin_first_name = models.CharField(max_length=150)
-    next_of_kin_last_name = models.CharField(max_length=150)
-    next_of_kin_middle_name = models.CharField(max_length=150, blank=True, null=True)
-    country = models.CharField(max_length=2, choices=COUNTRY_CHOICES)
-    next_of_kin_phone_number = PhoneNumberField(blank=True)
-    next_of_kin_email = models.EmailField(max_length=255)
-    next_of_kin_relationship = models.CharField(max_length=150)
+    objects = UserManager()
+
+    REQUIRED_FIELDS = []
+    USERNAME_FIELD = "email"
+
+    @property
+    def is_admin(self):
+        "Is the user a member of staff?"
+        # Simplest possible answer: All admins are staff
+        return self.is_staff
+
+    def __str__(self):
+        return self.email
+
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name}'
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["last_name", "first_name", "email"]),
+        ]
 
 
-@receiver(pre_save, sender=Staff)
-def generate_unique_identifier(sender, instance, **kwargs):
-    if not instance.id:
-        random_digits = get_random_string(length=7, allowed_chars="0123456789")
-        random_alphabet = get_random_string(length=1, allowed_chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-        id = f"{random_alphabet}{random_digits}"
-        instance.id = id
+ACTION_TYPES = [
+    (CREATE, CREATE),
+    (READ, READ),
+    (UPDATE, UPDATE),
+    (DELETE, DELETE),
+    (LOGIN, LOGIN),
+    (LOGOUT, LOGOUT),
+    (LOGIN_FAILED, LOGIN_FAILED),
+]
 
 
+ACTION_STATUS = [(SUCCESS, SUCCESS), (FAILED, FAILED)]
 
-#
+class ActivityLog(models.Model):
+    actor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    action_type = models.CharField(choices=ACTION_TYPES, max_length=15)
+    action_time = models.DateTimeField(auto_now_add=True)
+    remarks = models.TextField(blank=True, null=True)
+    status = models.CharField(choices=ACTION_STATUS, max_length=7, default=SUCCESS)
+    data = models.JSONField(default=dict)
 
+    # for generic relations
+    content_type = models.ForeignKey(
+        ContentType, models.SET_NULL, blank=True, null=True
+    )
+    object_id = models.PositiveIntegerField(blank=True, null=True)
+    content_object = GenericForeignKey()
 
-
+    def __str__(self) -> str:
+        return f"{self.action_type} by {self.actor} on {self.action_time}"
