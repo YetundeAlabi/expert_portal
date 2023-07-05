@@ -1,12 +1,12 @@
 from django.db import models
 
-from .managers import ActiveManager, DeletedManager, ActiveUserManager
+from .managers import ActiveManager, DeletedManager
 
 class BaseModel(models.Model):
     date_created = models.DateTimeField(auto_now=True)
     date_updated = models.DateTimeField(auto_now_add=True)
 
-    active_objects = ActiveUserManager()
+   
     
     class Meta:
         abstract = True
