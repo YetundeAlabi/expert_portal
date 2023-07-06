@@ -2,7 +2,7 @@ from django.urls import reverse
 
 from rest_framework import serializers
 
-from staff_mgt.models import Tribe, Squad, Admin, Region, OfficeAddress
+from staff_mgt.models import Tribe, Squad, Region, OfficeAddress
 from accounts.serializers import UserSerializer
 
 

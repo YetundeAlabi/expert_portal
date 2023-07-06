@@ -8,11 +8,22 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["email", "password", "first_name","last_name"]
+        fields = ["email", "password", "passsword2", "first_name","last_name"]
         extra_kwargs = {"password": {"write_only": True, "min_length": 5}}
 
-    # def validate_email(self, attrs):
-    #     # return super().validate(attr
+    def validate_email(self, value):
+        domain = value.split("@")[1]
+        valid_email_domain = ["afexnigeria.com", "africaexchange.com", "afexkenya.com", "afexuganda.com"]
+        if not domain in valid_email_domain:
+            raise serializers.ValidationError("Invalid email address. Enter official email")
+        return value
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+
+        return attrs
+    
 
 class UserLoginSerializer(serializers.ModelSerializer):
     """Serializer to authenticate users with email and password"""
@@ -29,3 +40,16 @@ class UserLoginSerializer(serializers.ModelSerializer):
         if user.is_admin and user.is_active:
             return user
         raise serializers.ValidationError("Incorrect Credentials")
+
+
+class ForgetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class VerifyPinSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
+    verication_code = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ["email", "verification_code"]
