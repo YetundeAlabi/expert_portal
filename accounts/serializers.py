@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.ModelSerializer):
     """Serializer to authenticate users with email and password"""
     email = serializers.EmailField(validators=[validators.validate_email_domain])
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
 
     class Meta:
         model = User

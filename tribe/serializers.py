@@ -1,5 +1,5 @@
-from django.urls import reverse
 
+from rest_framework.reverse import reverse
 from rest_framework import serializers
 
 from staff_mgt.models import Tribe, Squad, Region, Location, Staff
@@ -7,21 +7,23 @@ from accounts.serializers import UserSerializer
 
 
 class SquadListSerializer(serializers.ModelSerializer):
-    member_count = serializers.SerializerMethodField()
+    members = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
     
     class Meta:
         model = Squad
-        fields= ["name", "squad_lead", "member_count", "date_created", "url"]
+        fields= ["name", "squad_lead", "members", "date_created", "url"]
 
-    def get_member_count(self, obj):
-        return obj.get_member_count()
+    def get_members(self, obj):
+        print(obj)
+        return obj.staff_set.count()
                                                                                                                         
     def get_url(self, obj):
         request = self.context.get('request')
+        tribe_id = self.context.get('tribe_id')
         if request is None:
             return None
-        return reverse("squad_detail_update", kwargs={"pk": obj.pk}, request=request)
+        return reverse("tribe:squad_detail_update", kwargs={"pk": obj.pk, "tribe_pk": tribe_id}, request=request)
 
 
 class TribeSerializer(serializers.ModelSerializer):
@@ -41,42 +43,33 @@ class TribeSerializer(serializers.ModelSerializer):
 class TribeListSerializer(serializers.ModelSerializer):
     squads = serializers.StringRelatedField(many=True, read_only=True) #get names of squads in a tribe 
     url = serializers.SerializerMethodField()
-    # edit_url = serializers.HyperlinkedIdentityField(
-    #     view_name="tribe_update",
-    #     lookup_field = "pk",
-    #     read_only =True
-    # )
-    # detail_url = serializers.HyperlinkedIdentityField(
-    #     view_name="tribe_detail",
-    #     lookup_field = "pk",
-    #     read_only =True
-    # )
 
     class Meta:
         model = Tribe
-        fields = ["name", "tribe_lead", "date_created", "url"]
+        fields = ["name", "tribe_lead", "date_created", "url", "squads"]
 
     def get_url(self, obj):
         request = self.context.get('request')
         if request is None:
             return None
-        return reverse("tribe_detail_update", kwargs={"pk": obj.pk}, request=request)
+        return reverse("tribe:tribe_detail_update", kwargs={"pk": obj.pk}, request=request)
 
 
 class TribeDetailSerializer(serializers.ModelSerializer):
     num_squads = serializers.SerializerMethodField()
     overall_squad_members = serializers.SerializerMethodField() 
     staff_members = serializers.SerializerMethodField() 
-    squad = SquadListSerializer()
+    # squads = SquadListSerializer()
 
     class Meta:
-        fields = ["name", "description", "tribe_lead", "num_squads", "overall_squad_members", "squad"]
+        model = Tribe
+        fields = ["name", "description", "tribe_lead", "num_squads", "overall_squad_members", "staff_members"]
 
     def get_num_squads(self, obj):
         return obj.get_staff_count()
     
     def get_overall_squad_members(self, obj):
-        return obj.get_staff_set.count()
+        return obj.get_squad_count()
     
     def get_staff_members(self, obj):
         return Staff.objects.filter(tribe=obj).count()
@@ -129,6 +122,6 @@ class LocationListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        fields = ["country", "city", "is_headquarter", "description", "edit_url", "detail_url"]
+        fields = ["country", "city", "is_headquarter", "description", "edit_url", "detail_url", "delete_url"]
 
    

@@ -67,7 +67,6 @@ class TribeDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
             return TribeSerializer
 
 
-
 class SquadDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
     queryset = Squad.objects.all()
     serializer_class = SquadSerializer
@@ -75,15 +74,22 @@ class SquadDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
     def get_queryset(self):
         tribe_pk = self.kwargs["tribe_pk"]
         return self.queryset.filter(tribe_id=tribe_pk)
+    
+    
 
+class SquadListAPIView(ListAPIView):
+    queryset = Squad.objects.all()
+    serializer_class = SquadListSerializer
 
-# class SquadUpdateAPIView(UpdateAPIView):
-#     queryset = Tribe.objects.all()
-#     serializer_class = SquadSerializer
-
-#     def get_queryset(self):
-#         tribe_pk = self.kwargs["tribe_pk"]
-#         return self.queryset.filter(tribe_id=tribe_pk)
+    def get_queryset(self):
+        tribe_pk = self.kwargs["tribe_pk"]
+        return self.queryset.filter(tribe_id=tribe_pk)
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["tribe_id"] = self.kwargs["tribe_pk"]
+        context["request"] = self.request
+        return context
 
 
 class RegionCreateAPIView(ActivityLogMixin, CreateAPIView):
