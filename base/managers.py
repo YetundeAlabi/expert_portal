@@ -22,9 +22,9 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-# class ActiveUserManager(models.Manager):
-#    def get_queryset(self):
-#        return super().get_queryset().filter(is_active=True)
+class ActiveUserManager(models.Manager):
+   def get_queryset(self):
+       return super().get_queryset().filter(is_active=True)
 
 
 class ActiveManager(models.Manager):

@@ -6,7 +6,9 @@ from rest_framework.generics import GenericAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 
-from accounts.serializers import UserLoginSerializer, UserSerializer, ForgetPasswordSerializer, VerifyPinSerializer
+from accounts.serializers import (
+    UserLoginSerializer, UserSerializer, ForgetPasswordSerializer, 
+    VerifyPinSerializer, ResetPasswordSerializer)
 from base.utils import Util
 # Create your views here.
 
@@ -14,8 +16,10 @@ User = get_user_model()
 
 class LoginAPIView(GenericAPIView):
     """
-    An endpoint to authenticate existing users using their email and password.
+    An endpoint to authenticate admin using their official Afex email and password.
     """
+    authentication_classes = ()
+    permission_classes = []
     serializer_class = UserLoginSerializer
 
     def post(self, request, *args, **kwargs):
@@ -32,7 +36,9 @@ class LoginAPIView(GenericAPIView):
 
 
 class LogoutView(GenericAPIView):
-    
+    """
+    An endpoint to logout authenticated user.
+    """
     def post(self, request):
         try:
             refresh_token = request.data["refresh_token"]
@@ -78,7 +84,23 @@ class VerifyPinView(GenericAPIView):
 
         user = User.objects.filter(email=email)
         if user.verification_code != verification_code:
-            return Response({"message": "Incorrect Verification Pin."})
+            return Response({"message": "Incorrect Verification Pin."}, status=status.HTTP_400_BAD_REQUEST)
         user.verification_code = ""
         user.save(update_fields=["verification_code"])
         return Response({"message": "verification successful"}, status=status.HTTP_200_OK)
+
+
+class ResetPasswordView(GenericAPIView):
+    serializer_class = ResetPasswordSerializer
+
+    def post(self, request):
+        serilizer = self.get_serializer(data=request.data)
+        serilizer.is_valid(raise_expection=True)
+        email = serilizer.validated_data["email"]
+        new_password = serilizer.validated_data["new_password"]
+        user = User.objects.filter(email=email)
+        if user.exists:
+            user.set_password(new_password)
+            user.save()
+            return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
+        return Response({"message": "Invalid email address"}, status=status.HTTP_404_NOT_FOUND)

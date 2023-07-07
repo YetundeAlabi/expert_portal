@@ -1,0 +1,139 @@
+openapi: 3.0.3
+info:
+  title: Expert Data Portal
+  version: 0.0.0
+paths:
+  /api/auth/forget-password/:
+    post:
+      operationId: forget_password_create
+      tags:
+      - forget-password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgetPassword'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ForgetPassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ForgetPassword'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForgetPassword'
+          description: ''
+  /api/auth/login/:
+    post:
+      operationId: login_create
+      description: An endpoint to authenticate existing users using their email and
+        password.
+      tags:
+      - login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLogin'
+          description: ''
+  /api/auth/logout/:
+    post:
+      operationId: logout_create
+      tags:
+      - logout
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/auth/verify-pin/:
+    post:
+      operationId: verify_pin_create
+      tags:
+      - verify-pin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyPin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VerifyPin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifyPin'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyPin'
+          description: ''
+components:
+  schemas:
+    ForgetPassword:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    UserLogin:
+      type: object
+      description: Serializer to authenticate users with email and password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+    VerifyPin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        verification_code:
+          type: string
+      required:
+      - email
+      - verification_code
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from phonenumber_field.modelfields import PhoneNumberField
 
 from base.constants import FEMALE, MALE, DIVORCED, MARRIED, SINGLE, WIDOWED
+from base.managers import ActiveManager, ActiveUserManager
 from base.models import BaseModel, DeletableBaseModel
 
 
@@ -31,11 +32,11 @@ COUNTRY_CHOICES = [
 ]
 
 
-class Tribe(models.Model):
+class Tribe(BaseModel):
     name = models.CharField(max_length=255)
     description = models.TextField()
     # tribe_lead = models.CharField(max_length=150)
-    tribe_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, null=True)
+    tribe_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, null=True, blank=True, related_name="tribe_lead")
 
     def get_staff_count(self):
        return self.staff_set.count()
@@ -52,7 +53,7 @@ class Squad(BaseModel):
     description = models.TextField()
     # squad_lead = models.CharField(max_length=150)
     tribe = models.ForeignKey(Tribe, on_delete=models.SET_NULL, null=True, related_name="squads")
-    squad_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, null=True, related_name="squad_lead")
+    squad_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, blank = True, null=True, related_name="squad_lead")
 
     def get_member_count(self):
         return self.staff_set.count()
@@ -63,7 +64,7 @@ class Squad(BaseModel):
 
 class StaffBaseModel(BaseModel):
     unique_id = models.CharField(max_length=8, null=True, blank=True, editable=False)
-    picture = models.ImageField(upload_to="accounts/media")
+    picture = models.ImageField(upload_to="accounts/media", )
     middle_name = models.CharField(max_length=150, blank=True, null=True)
     date_of_birth = models.DateField()
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
@@ -82,6 +83,7 @@ class StaffBaseModel(BaseModel):
     next_of_kin_phone_number = PhoneNumberField(blank=True)
     next_of_kin_email = models.EmailField(max_length=255)
     next_of_kin_relationship = models.CharField(max_length=150)
+    # suspension_date = models.DateField()
 
     class Meta:
         abstract = True
@@ -89,7 +91,12 @@ class StaffBaseModel(BaseModel):
 
 class Staff(StaffBaseModel):
     email = models.EmailField(max_length=255, unique=True)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
     is_active = models.BooleanField(default=True)
+
+    active_objects = ActiveUserManager()
+    objects = models.Manager()
 
     class Meta:
         indexes = [
@@ -108,10 +115,10 @@ class Staff(StaffBaseModel):
     def status(self):
         return self.is_active
 
+
 """Signal to create unique identifier for staff"""
 @receiver(pre_save, sender=Staff)
 def generate_unique_identifier(sender, instance, **kwargs):
-    print(sender, instance)
     if not instance.unique_id:
         random_digits = get_random_string(length=7, allowed_chars="0123456789")
         random_alphabet = get_random_string(length=1, allowed_chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -121,24 +128,19 @@ def generate_unique_identifier(sender, instance, **kwargs):
 
 class Admin(StaffBaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-   
-    class Meta:
-        indexes = [
-            models.Index(fields=["last_name", "first_name", "email"]),
-        ]
-
+    
     def __str__(self):
         return self.get_full_name()
 
     def get_full_name(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.user.first_name} {self.user.last_name}'
+
 
 @receiver(pre_save, sender=Admin)
 def generate_unique_identifier(sender, instance, **kwargs):
-    print(sender, instance)
     if not instance.unique_id:
         random_digits = get_random_string(length=7, allowed_chars="0123456789")
-        random_alphabet = get_random_string(length=1, allowed_chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        random_alphabet = get_random_string(length=1, allowed_chars="ABCDEF")
         unique_id = f"{random_alphabet}{random_digits}"
         instance.unique_id = unique_id
 

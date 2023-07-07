@@ -7,7 +7,6 @@ from accounts.serializers import UserSerializer
 
 
 class SquadListSerializer(serializers.ModelSerializer):
-    # get squad_count in views
     member_count = serializers.SerializerMethodField()
     
     edit_url = serializers.SerializerMethodField()
@@ -22,8 +21,7 @@ class SquadListSerializer(serializers.ModelSerializer):
 
     def get_member_count(self, obj):
         return obj.get_member_count()
-    
-
+                                                                                                                        
     def get_edit_url(self, obj):
         request = self.context.get('request')
         if request is None:

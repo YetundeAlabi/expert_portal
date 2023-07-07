@@ -1,43 +1,45 @@
-from django.urls import reverse
 
 from rest_framework import serializers
-
+from rest_framework.reverse import reverse
+from base import validators
 from staff_mgt.models import Staff, Admin
 from accounts.serializers import UserSerializer
 
 class StaffSerializer(serializers.ModelSerializer):
-    
+    """Seriaizer for creating and updating staff"""
+    email = serializers.EmailField(validators=[validators.validate_email_domain])
+
     class Meta:
         model = Staff
-        fields = ["first_name", "last_name", "email", "picture", "middle_name", "date_of_birth", "gender",
-                  "martial_status", "picture", "alias_email", "squad", "role",
-                    "phone_number", "work_phone", "city", "next_of_kin_first_name",
-                    "next_of_kin_last_name", "next_of_kin_middle_name", "country",
-                    "next_of_kin_phone_number", "next_of_kin_email", "next_of_kin_relationship"]
-        
         read_only_fields = ["id", "unique_id"]
+        exclude = ["is_active"]
+
 
 class StaffListSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
-    staff_count = serializers.SerializerMethodField()
-    update_url = serializers.HyperlinkedIdentityField(
-        view_name="staff_update",
-        lookup_field = "pk",
-        read_only =True
-    )
-    # detail_url =
-    # deactivate_url =
+    detail_url = serializers.SerializerMethodField(read_only=True)
+    edit_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Staff
-        fields = ["name", "email", "phone_number", "tribe", "squad", "status", "staff_count", "update_url",
-                  "detail_url", "deactivate_url"]
+        fields = ["name", "email", "phone_number", "tribe", "squad", "status",
+                  "detail_url", "edit_url", "id", "unique_id"]
 
     def get_name(self, obj):
         return obj.get_full_name()
     
-    def get_staff_count(self):
-        return Staff.objects.count()
+    def get_detail_url(self, obj):
+        request = self.context.get('request')
+        if request is None:
+            return None
+        return reverse("staff_mgt:staff_detail", kwargs={"pk": obj.pk}, request=request)
+
+    def get_edit_url(self, obj):
+        request = self.context.get('request')
+        if request is None:
+            return None
+        return reverse("staff_mgt:staff_edit", kwargs={"pk": obj.pk}, request=request)
+
 
 
 class AdminSerializer(serializers.ModelSerializer):
@@ -45,11 +47,11 @@ class AdminSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Admin
-        fields = ["picture", "middle_name", "date_of_birth", "gender",
-                  "martial_status", "picture", "alias_email", "squad", "role",
-                    "phone_number", "work_phone", "city", "next_of_kin_first_name",
-                    "next_of_kin_last_name", "next_of_kin_middle_name", "country",
-                    "next_of_kin_phone_number", "next_of_kin_email", "next_of_kin_relationship", "user"]
+        fields = "__all__"
+        read_only_fields = ["id", "unique_id"]
+        
 
+class SuspendStaffSerializer(serializers.Serializer):
+    suspension_date = serializers.DateField()
 
 

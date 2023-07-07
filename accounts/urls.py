@@ -1,9 +1,12 @@
 from django.urls import path
 
-from accounts.views import LoginAPIView, LogoutView
+from . import views
+
+app_name = "accounts"
 
 urlpatterns = [
-    path("login/", LoginAPIView.as_view(), name="login"),
-    path("logout/", LogoutView.as_view(), name="logout"),
-    
+    path("login/", views.LoginAPIView.as_view(), name="login"),
+    path("logout/", views.LogoutView.as_view(), name="logout"),
+    path("forget-password/", views.ForgetPasswordView.as_view(), name="forget_password"),
+    path("verify-pin/", views.VerifyPinView.as_view(), name="verify_pin")
 ]

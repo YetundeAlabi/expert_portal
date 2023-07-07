@@ -17,7 +17,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=True) #sign up required for only admin 
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
-    verification_code = models.CharField()
+    verification_code = models.CharField(max_length=6, blank=True, null=True)
 
     objects = UserManager()
 
@@ -26,8 +26,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_admin(self):
-        "Is the user a member of staff?"
-        # Simplest possible answer: All admins are staff
+        
         return self.is_staff
 
     def __str__(self):
