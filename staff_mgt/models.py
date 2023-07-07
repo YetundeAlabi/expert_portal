@@ -153,6 +153,7 @@ class Region(models.Model):
 
 
 class OfficeAddress(DeletableBaseModel):
+    description = models.TextField()
     country = models.ForeignKey(Region, on_delete=models.CASCADE)
     latitude = models.CharField(max_length=20)
     longitude = models.CharField(max_length=20)
