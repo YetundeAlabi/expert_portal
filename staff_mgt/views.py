@@ -1,14 +1,15 @@
-from rest_framework.generics import RetrieveAPIView, GenericAPIView, UpdateAPIView, ListAPIView
+from rest_framework.generics import RetrieveAPIView, GenericAPIView, UpdateAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
 from .models import Staff, Tribe, Squad, Admin
+from base.mixins import ActivityLogMixin
 from .serializers import StaffSerializer, StaffListSerializer, AdminSerializer
 from base.constants import FEMALE, MALE
 
 
-class DashboardAPIView(GenericAPIView):
+class DashboardAPIView(ActivityLogMixin, GenericAPIView):
     """ 
     An endpoint to get dashboard paramaters 
     """
@@ -36,7 +37,7 @@ class DashboardAPIView(GenericAPIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class StaffCreateAPIView(GenericAPIView):
+class StaffCreateAPIView(ActivityLogMixin, GenericAPIView):
     queryset = Staff.objects.all()
     serializer_class = StaffSerializer
         
@@ -49,7 +50,7 @@ class StaffCreateAPIView(GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class StaffListAPIView(ListAPIView):
+class StaffListAPIView(ActivityLogMixin, ListAPIView):
     queryset = Staff.objects.all()
     serializer_class = StaffListSerializer
 
@@ -67,23 +68,24 @@ class StaffListAPIView(ListAPIView):
         return Response({'message': 'Staff list pulled successfully', 'data': data, 'staff_count': staff_count}, status=status.HTTP_200_OK) 
 
 
-class StaffDetailAPIView(RetrieveAPIView):
-    queryset = Staff.objects.all()
-    serializer_class = StaffSerializer
-
-
-class StaffUpdateAPIView(UpdateAPIView):
+class StaffRetrieveUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
     queryset = Staff.objects.all()
     serializer_class = StaffSerializer
     lookup_field = "pk"
 
 
-class AdminDetailAPIView(RetrieveAPIView):
+# class StaffUpdateAPIView(UpdateAPIView):
+#     queryset = Staff.objects.all()
+#     serializer_class = StaffSerializer
+#     lookup_field = "pk"
+
+
+class AdminDetailAPIView(ActivityLogMixin, RetrieveAPIView):
     queryset = Admin.objects.all()
     serializer_class = AdminSerializer
 
 
-class SuspendStaffAPIView(UpdateAPIView):
+class SuspendStaffAPIView(ActivityLogMixin, UpdateAPIView):
     queryset = Staff.objects.all()
     serializer_class = StaffSerializer
 

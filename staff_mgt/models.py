@@ -83,7 +83,7 @@ class StaffBaseModel(BaseModel):
     next_of_kin_phone_number = PhoneNumberField(blank=True)
     next_of_kin_email = models.EmailField(max_length=255)
     next_of_kin_relationship = models.CharField(max_length=150)
-    # suspension_date = models.DateField()
+    suspension_date = models.DateField(blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -152,7 +152,7 @@ class Region(models.Model):
         return self.country
 
 
-class OfficeAddress(DeletableBaseModel):
+class Location(DeletableBaseModel):
     description = models.TextField()
     country = models.ForeignKey(Region, on_delete=models.CASCADE)
     latitude = models.CharField(max_length=20)

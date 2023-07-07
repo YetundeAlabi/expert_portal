@@ -2,30 +2,26 @@ from django.urls import reverse
 
 from rest_framework import serializers
 
-from staff_mgt.models import Tribe, Squad, Region, OfficeAddress, Staff
+from staff_mgt.models import Tribe, Squad, Region, Location, Staff
 from accounts.serializers import UserSerializer
 
 
 class SquadListSerializer(serializers.ModelSerializer):
     member_count = serializers.SerializerMethodField()
-    edit_url = serializers.SerializerMethodField()
-    detail_url = serializers.HyperlinkedIdentityField(
-        view_name="squad_detail",
-        lookup_field = "pk",
-        read_only =True
-    )
+    url = serializers.SerializerMethodField()
+    
     class Meta:
         model = Squad
-        fields= ["name", "squad_lead", "member_count", "date_created", "edit_url", "detail_url"]
+        fields= ["name", "squad_lead", "member_count", "date_created", "url"]
 
     def get_member_count(self, obj):
         return obj.get_member_count()
                                                                                                                         
-    def get_edit_url(self, obj):
+    def get_url(self, obj):
         request = self.context.get('request')
         if request is None:
             return None
-        return reverse("squad_update", kwargs={"pk": obj.pk}, request=request)
+        return reverse("squad_detail_update", kwargs={"pk": obj.pk}, request=request)
 
 
 class TribeSerializer(serializers.ModelSerializer):
@@ -44,20 +40,27 @@ class TribeSerializer(serializers.ModelSerializer):
 
 class TribeListSerializer(serializers.ModelSerializer):
     squads = serializers.StringRelatedField(many=True, read_only=True) #get names of squads in a tribe 
-    edit_url = serializers.HyperlinkedIdentityField(
-        view_name="tribe_update",
-        lookup_field = "pk",
-        read_only =True
-    )
-    detail_url = serializers.HyperlinkedIdentityField(
-        view_name="tribe_detail",
-        lookup_field = "pk",
-        read_only =True
-    )
+    url = serializers.SerializerMethodField()
+    # edit_url = serializers.HyperlinkedIdentityField(
+    #     view_name="tribe_update",
+    #     lookup_field = "pk",
+    #     read_only =True
+    # )
+    # detail_url = serializers.HyperlinkedIdentityField(
+    #     view_name="tribe_detail",
+    #     lookup_field = "pk",
+    #     read_only =True
+    # )
 
     class Meta:
         model = Tribe
-        fields = ["name", "tribe_lead", "date_created", "edit_url", "detail_url"]
+        fields = ["name", "tribe_lead", "date_created", "url"]
+
+    def get_url(self, obj):
+        request = self.context.get('request')
+        if request is None:
+            return None
+        return reverse("tribe_detail_update", kwargs={"pk": obj.pk}, request=request)
 
 
 class TribeDetailSerializer(serializers.ModelSerializer):
@@ -97,19 +100,35 @@ class RegionSerializer(serializers.ModelSerializer):
         fields = ["country"]
 
 
-class OfficeAddressSerializer(serializers.ModelSerializer):
+class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = OfficeAddress
+        model = Location
         fields = ["country", "latitude", "longitude", "city", "is_headquarter", "description"]
 
 
-class OfficeAddressListSerializer(serializers.ModelSerializer):
+class LocationListSerializer(serializers.ModelSerializer):
     # edit_url
-    # delete
+    delete_url = serializers.HyperlinkedIdentityField(
+        view_name="delete_location",
+        lookup_field = "pk",
+        read_only =True
+    )
+
+    edit_url = serializers.HyperlinkedIdentityField(
+        view_name="location_update",
+        lookup_field = "pk",
+        read_only =True
+    )
+    detail_url = serializers.HyperlinkedIdentityField(
+        view_name="location_detail",
+        lookup_field = "pk",
+        read_only =True
+    )
+
 
     class Meta:
-        model = OfficeAddress
-        fields = ["country", "city", "is_headquarter", "description"]
+        model = Location
+        fields = ["country", "city", "is_headquarter", "description", "edit_url", "detail_url"]
 
    
