@@ -39,10 +39,10 @@ class TribeListAPIView(ActivityLogMixin, ListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         tribe_count = queryset.count()
 
-        # page = self.paginate_queryset(queryset)
-        # if page is not None:
-        #     serializer = self.get_serializer(page, many=True)
-        #     return self.get_paginated_response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
         data = serializer.data
@@ -75,7 +75,7 @@ class ExportTribeAPIView(GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         model_name = self.get_serializer().Meta.model.__name__
-        file_name = f'{model_name.lower()}.csv  q1`'
+        file_name = f'{model_name.lower()}.csv'
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
