@@ -7,6 +7,7 @@ from .models import Staff, Tribe, Squad, Admin
 from base.mixins import ActivityLogMixin
 from .serializers import StaffSerializer, StaffListSerializer, AdminSerializer
 from base.constants import FEMALE, MALE
+from base.utils import export_data
 
 
 class DashboardAPIView(ActivityLogMixin, GenericAPIView):
@@ -73,6 +74,19 @@ class StaffRetrieveUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
     serializer_class = StaffSerializer
     lookup_field = "pk"
 
+
+class ExportStaffAPIView(GenericAPIView):
+    queryset = Staff.objects.all()
+    serializer_class = StaffListSerializer
+
+    def get(self, request, *args, **kwargs):
+        model_name = self.get_serializer().Meta.model.__name__
+        file_name = f'{model_name.lower()}.csv'
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        file = export_data(serializer=serializer, file_name=file_name)
+        return file
 
 # class StaffUpdateAPIView(UpdateAPIView):
 #     queryset = Staff.objects.all()

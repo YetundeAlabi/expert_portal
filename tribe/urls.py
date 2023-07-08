@@ -9,7 +9,7 @@ urlpatterns = [
     path("<int:pk>/", views.TribeDetailUpdateAPIView.as_view(), name="tribe_detail_update"),
     # path("<int:pk>/update", views.TribeUpdateAPIView.as_view(), name="tribe_update"),
     path("<int:tribe_pk>/squads/<int:pk>/", views.SquadDetailUpdateAPIView.as_view(), name="squad_detail_update"),
-    path("<int:tribe_pk>/squads", views.SquadListCreateAPIView.as_view(), name="squad_list"),
-    #  path("<int:tribe_pk>/squads/create", views.SquadCreateAPIView.as_view(), name="squad_list"),
+    path("<int:tribe_pk>/squads", views.SquadListCreateAPIView.as_view(), name="squad_list_create"),
+    path("<int:tribe_pk>/squads/export", views.ExportSquadAPIView.as_view(), name="export_squad"),
     
 ]

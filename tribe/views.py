@@ -9,6 +9,8 @@ from base.mixins import ActivityLogMixin
 from tribe import serializers
 from .serializers import SquadSerializer, SquadListSerializer,TribeSerializer,TribeListSerializer, RegionSerializer, LocationSerializer, TribeDetailSerializer
 # from base.constants import FEMALE, MALE
+from base.utils import export_data
+
 
 # Create your views here.
 
@@ -56,8 +58,6 @@ class TribeListAPIView(ActivityLogMixin, ListAPIView):
 #     queryset = Tribe.objects.all()
 #     serializer_class = TribeSerializer
 
-
-
 class TribeDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
     queryset = Tribe.objects.all()
     lookup_field = 'pk'
@@ -69,6 +69,20 @@ class TribeDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
             return TribeSerializer
 
 
+class ExportTribeAPIView(GenericAPIView):
+    queryset = Tribe.objects.all()
+    serializer_class = TribeListSerializer
+
+    def get(self, request, *args, **kwargs):
+        model_name = self.get_serializer().Meta.model.__name__
+        file_name = f'{model_name.lower()}.csv  q1`'
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        file = export_data(serializer=serializer, file_name=file_name)
+        return file
+    
+
 class SquadDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
     queryset = Squad.objects.all()
     serializer_class = SquadSerializer
@@ -78,10 +92,8 @@ class SquadDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
         return self.queryset.filter(tribe_id=tribe_pk)
     
     
-
 class SquadListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
     queryset = Squad.objects.all()
-    # serializer_class = SquadListSerializer
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -89,16 +101,37 @@ class SquadListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
         elif self.request.method == 'POST':
             return SquadSerializer
     
-    def get_queryset(self):
-        tribe_pk = self.kwargs["tribe_pk"]
-        return self.queryset.filter(tribe_id=tribe_pk)
-    
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context["tribe_id"] = self.kwargs["tribe_pk"]
         context["request"] = self.request
         return context
 
+
+class ExportSquadAPIView(GenericAPIView):
+    serializer_class = serializers.ExportSquadSerializer
+
+    def get_queryset(self):
+        tribe_pk = self.kwargs["tribe_pk"]
+        return Squad.objects.filter(tribe_id=tribe_pk)
+    
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        # get tribe and squad name as file name e.g innovation_and_technology_squad.csv/ ACEL_squad.csv
+        tribe_pk = self.kwargs["tribe_pk"]
+        tribe = Tribe.objects.get(pk=tribe_pk)
+        tribe_name = tribe.name.replace(" ", "_")
+        model_name = self.get_serializer().Meta.model.__name__
+        file_name = f'{tribe_name}_{model_name}.csv' 
+        file_name = file_name.lower()
+
+        serializer = self.get_serializer(queryset, many=True)
+        file = export_data(serializer=serializer, file_name=file_name)
+
+        return file
+       
+    
 
 class RegionCreateAPIView(ActivityLogMixin, CreateAPIView):
     queryset = Region.objects.all()

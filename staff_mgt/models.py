@@ -49,7 +49,7 @@ class Tribe(BaseModel):
 
 
 class Squad(BaseModel):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255) #unique
     description = models.TextField()
     # squad_lead = models.CharField(max_length=150)
     tribe = models.ForeignKey(Tribe, on_delete=models.SET_NULL, null=True, related_name="squads")
@@ -84,7 +84,7 @@ class StaffBaseModel(BaseModel):
     next_of_kin_email = models.EmailField(max_length=255)
     next_of_kin_relationship = models.CharField(max_length=150)
     suspension_date = models.DateField(blank=True, null=True)
-
+    # remove suspension date to only staff
     class Meta:
         abstract = True
         

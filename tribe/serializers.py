@@ -15,7 +15,6 @@ class SquadListSerializer(serializers.ModelSerializer):
         fields= ["name", "squad_lead", "members", "date_created", "url"]
 
     def get_members(self, obj):
-        print(obj)
         return obj.staff_set.count()
                                                                                                                         
     def get_url(self, obj):
@@ -24,6 +23,17 @@ class SquadListSerializer(serializers.ModelSerializer):
         if request is None:
             return None
         return reverse("tribe:squad_detail_update", kwargs={"pk": obj.pk, "tribe_pk": tribe_id}, request=request)
+
+
+class ExportSquadSerializer(serializers.ModelSerializer):
+    members = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Squad
+        fields= ["name", "squad_lead", "members", "date_created"]
+
+    def get_members(self, obj):
+        return obj.staff_set.count()
 
 
 class TribeSerializer(serializers.ModelSerializer):

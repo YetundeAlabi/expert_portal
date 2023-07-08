@@ -1,4 +1,7 @@
 import smtplib
+import csv
+
+from django.http import HttpResponse
 
 from django.core.mail import EmailMessage
 from django.conf import settings
@@ -17,3 +20,18 @@ class Util:
             email.send()
         except smtplib.SMTPException as e:
             print(f"An error occured: {e}")
+
+
+def export_data(serializer, file_name):
+
+    response = HttpResponse(content_type='text/csv')
+    response["Content-Disposition"] = f'attachment; filename={file_name} '
+
+    writer = csv.writer(response)
+    writer.writerow(serializer.child.fields.keys())
+
+    for obj in serializer.data:
+        writer.writerow(obj.values())
+
+    return response
+
