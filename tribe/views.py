@@ -19,8 +19,10 @@ class TribeCreateAPIView(ActivityLogMixin, GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
+            
             serializer.save()
             data = serializer.data
+           
             return Response({'message': 'Tribe created successfully', 'data': data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -77,10 +79,16 @@ class SquadDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
     
     
 
-class SquadListAPIView(ListAPIView):
+class SquadListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
     queryset = Squad.objects.all()
-    serializer_class = SquadListSerializer
+    # serializer_class = SquadListSerializer
 
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return SquadListSerializer
+        elif self.request.method == 'POST':
+            return SquadSerializer
+    
     def get_queryset(self):
         tribe_pk = self.kwargs["tribe_pk"]
         return self.queryset.filter(tribe_id=tribe_pk)

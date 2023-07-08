@@ -34,8 +34,8 @@ class TribeSerializer(serializers.ModelSerializer):
 
     def validate_tribe_lead(self, value):
         """ check that squad lead exists in the tribe"""
-        qs = Tribe.staff_set.filter(pk=value).exist()
-        if not qs:
+        tribe = self.instance
+        if value is not None and value.tribe != tribe:
             raise serializers.ValidationError({"message": "Staff is not a member of this tribe"})
         return value
 
@@ -80,11 +80,19 @@ class SquadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Squad
-        fields = ["name", "description", "squad_lead"]
+        fields = ["id","name", "description", "squad_lead"]
+        read_only_field = ["id"]
 
-    def validate_squad_lead(self):
-        pass
-
+    def validate_squad_lead(self, value):
+        squad = self.instance
+        if value is not None and value.squad != squad:
+            raise serializers.ValidationError({"message": "Staff is not a member of this tribe"})
+        return value
+    
+    def create(self, validated_data):
+        tribe_id = self.context.get('tribe_id')
+        return Squad.objects.create(**validated_data, tribe_id=tribe_id)
+        
 
 class RegionSerializer(serializers.ModelSerializer):
 
