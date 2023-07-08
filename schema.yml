@@ -3,11 +3,33 @@ info:
   title: Expert Data Portal
   version: 0.0.0
 paths:
+  /api/admin/{id}/:
+    get:
+      operationId: api_admin_retrieve
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+          description: ''
   /api/auth/forget-password/:
     post:
-      operationId: forget_password_create
+      operationId: api_auth_forget_password_create
       tags:
-      - forget-password
+      - api
       requestBody:
         content:
           application/json:
@@ -32,11 +54,11 @@ paths:
           description: ''
   /api/auth/login/:
     post:
-      operationId: login_create
-      description: An endpoint to authenticate existing users using their email and
-        password.
+      operationId: api_auth_login_create
+      description: An endpoint to authenticate admin using their official Afex email
+        and password.
       tags:
-      - login
+      - api
       requestBody:
         content:
           application/json:
@@ -58,9 +80,10 @@ paths:
           description: ''
   /api/auth/logout/:
     post:
-      operationId: logout_create
+      operationId: api_auth_logout_create
+      description: An endpoint to logout authenticated user.
       tags:
-      - logout
+      - api
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -69,9 +92,9 @@ paths:
           description: No response body
   /api/auth/verify-pin/:
     post:
-      operationId: verify_pin_create
+      operationId: api_auth_verify_pin_create
       tags:
-      - verify-pin
+      - api
       requestBody:
         content:
           application/json:
@@ -94,14 +117,1976 @@ paths:
               schema:
                 $ref: '#/components/schemas/VerifyPin'
           description: ''
+  /api/dashboard/:
+    get:
+      operationId: api_dashboard_retrieve
+      description: An endpoint to get dashboard paramaters
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffList'
+          description: ''
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/staff/:
+    get:
+      operationId: api_staff_list
+      description: Mixin to track user actions
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffListList'
+          description: ''
+  /api/staff/{id}/:
+    get:
+      operationId: api_staff_retrieve
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+          description: ''
+    put:
+      operationId: api_staff_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Staff'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Staff'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Staff'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+          description: ''
+    patch:
+      operationId: api_staff_partial_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaff'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaff'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaff'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+          description: ''
+  /api/staff/create:
+    post:
+      operationId: api_staff_create_create
+      description: Mixin to track user actions
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Staff'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Staff'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Staff'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+          description: ''
+  /offices/:
+    get:
+      operationId: offices_list
+      description: Mixin to track user actions
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - offices
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLocationListList'
+          description: ''
+  /offices/{id}/delete:
+    delete:
+      operationId: offices_delete_destroy
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - offices
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /offices/{id}/update:
+    put:
+      operationId: offices_update_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - offices
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Location'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Location'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+    patch:
+      operationId: offices_update_partial_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - offices
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLocation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLocation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLocation'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+  /offices/create/:
+    post:
+      operationId: offices_create_create
+      description: Mixin to track user actions
+      tags:
+      - offices
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Location'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Location'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+  /region/create/:
+    post:
+      operationId: region_create_create
+      description: Mixin to track user actions
+      tags:
+      - region
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Region'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Region'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Region'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Region'
+          description: ''
+  /tribe/:
+    get:
+      operationId: tribe_list
+      description: Mixin to track user actions
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - tribe
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTribeListList'
+          description: ''
+  /tribe/{id}/:
+    get:
+      operationId: tribe_retrieve
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tribe
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TribeDetail'
+          description: ''
+    put:
+      operationId: tribe_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tribe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tribe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Tribe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Tribe'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tribe'
+          description: ''
+    patch:
+      operationId: tribe_partial_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tribe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTribe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTribe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTribe'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tribe'
+          description: ''
+  /tribe/{tribe_pk}/squads:
+    get:
+      operationId: tribe_squads_list
+      description: Mixin to track user actions
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: path
+        name: tribe_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tribe
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSquadListList'
+          description: ''
+    post:
+      operationId: tribe_squads_create
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: tribe_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tribe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Squad'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Squad'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Squad'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Squad'
+          description: ''
+  /tribe/{tribe_pk}/squads/{id}/:
+    get:
+      operationId: tribe_squads_retrieve
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: tribe_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tribe
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Squad'
+          description: ''
+    put:
+      operationId: tribe_squads_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: tribe_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tribe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Squad'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Squad'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Squad'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Squad'
+          description: ''
+    patch:
+      operationId: tribe_squads_partial_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: tribe_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tribe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSquad'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSquad'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSquad'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Squad'
+          description: ''
+  /tribe/create/:
+    post:
+      operationId: tribe_create_create
+      description: Mixin to track user actions
+      tags:
+      - tribe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tribe'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Tribe'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Tribe'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tribe'
+          description: ''
 components:
   schemas:
+    Admin:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          $ref: '#/components/schemas/User'
+        date_created:
+          type: string
+          format: date-time
+          readOnly: true
+        date_updated:
+          type: string
+          format: date-time
+          readOnly: true
+        unique_id:
+          type: string
+          readOnly: true
+          nullable: true
+        picture:
+          type: string
+          format: uri
+        middle_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        date_of_birth:
+          type: string
+          format: date
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        martial_status:
+          $ref: '#/components/schemas/MartialStatusEnum'
+        alias_email:
+          type: string
+          format: email
+          maxLength: 255
+        role:
+          type: string
+          maxLength: 255
+        phone_number:
+          type: string
+          maxLength: 128
+        work_phone:
+          type: string
+          maxLength: 128
+        city:
+          type: string
+          maxLength: 100
+        next_of_kin_first_name:
+          type: string
+          maxLength: 150
+        next_of_kin_last_name:
+          type: string
+          maxLength: 150
+        next_of_kin_middle_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        country:
+          $ref: '#/components/schemas/CountryEnum'
+        next_of_kin_phone_number:
+          type: string
+          maxLength: 128
+        next_of_kin_email:
+          type: string
+          format: email
+          maxLength: 255
+        next_of_kin_relationship:
+          type: string
+          maxLength: 150
+        suspension_date:
+          type: string
+          format: date
+          nullable: true
+        tribe:
+          type: integer
+          nullable: true
+        squad:
+          type: integer
+          nullable: true
+      required:
+      - alias_email
+      - city
+      - country
+      - date_created
+      - date_of_birth
+      - date_updated
+      - gender
+      - id
+      - martial_status
+      - next_of_kin_email
+      - next_of_kin_first_name
+      - next_of_kin_last_name
+      - next_of_kin_relationship
+      - phone_number
+      - picture
+      - role
+      - unique_id
+      - user
+    CountryEnum:
+      enum:
+      - AD
+      - AE
+      - AF
+      - AG
+      - AI
+      - AL
+      - AM
+      - AO
+      - AQ
+      - AR
+      - AS
+      - AT
+      - AU
+      - AW
+      - AX
+      - AZ
+      - BA
+      - BB
+      - BD
+      - BE
+      - BF
+      - BG
+      - BH
+      - BI
+      - BJ
+      - BL
+      - BM
+      - BN
+      - BO
+      - BQ
+      - BR
+      - BS
+      - BT
+      - BV
+      - BW
+      - BY
+      - BZ
+      - CA
+      - CC
+      - CD
+      - CF
+      - CG
+      - CH
+      - CI
+      - CK
+      - CL
+      - CM
+      - CN
+      - CO
+      - CR
+      - CU
+      - CV
+      - CW
+      - CX
+      - CY
+      - CZ
+      - DE
+      - DJ
+      - DK
+      - DM
+      - DO
+      - DZ
+      - EC
+      - EE
+      - EG
+      - EH
+      - ER
+      - ES
+      - ET
+      - FI
+      - FJ
+      - FK
+      - FM
+      - FO
+      - FR
+      - GA
+      - GB
+      - GD
+      - GE
+      - GF
+      - GG
+      - GH
+      - GI
+      - GL
+      - GM
+      - GN
+      - GP
+      - GQ
+      - GR
+      - GS
+      - GT
+      - GU
+      - GW
+      - GY
+      - HK
+      - HM
+      - HN
+      - HR
+      - HT
+      - HU
+      - ID
+      - IE
+      - IL
+      - IM
+      - IN
+      - IO
+      - IQ
+      - IR
+      - IS
+      - IT
+      - JE
+      - JM
+      - JO
+      - JP
+      - KE
+      - KG
+      - KH
+      - KI
+      - KM
+      - KN
+      - KP
+      - KR
+      - KW
+      - KY
+      - KZ
+      - LA
+      - LB
+      - LC
+      - LI
+      - LK
+      - LR
+      - LS
+      - LT
+      - LU
+      - LV
+      - LY
+      - MA
+      - MC
+      - MD
+      - ME
+      - MF
+      - MG
+      - MH
+      - MK
+      - ML
+      - MM
+      - MN
+      - MO
+      - MP
+      - MQ
+      - MR
+      - MS
+      - MT
+      - MU
+      - MV
+      - MW
+      - MX
+      - MY
+      - MZ
+      - NA
+      - NC
+      - NE
+      - NF
+      - NG
+      - NI
+      - NL
+      - 'NO'
+      - NP
+      - NR
+      - NU
+      - NZ
+      - OM
+      - PA
+      - PE
+      - PF
+      - PG
+      - PH
+      - PK
+      - PL
+      - PM
+      - PN
+      - PR
+      - PS
+      - PT
+      - PW
+      - PY
+      - QA
+      - RE
+      - RO
+      - RS
+      - RU
+      - RW
+      - SA
+      - SB
+      - SC
+      - SD
+      - SE
+      - SG
+      - SH
+      - SI
+      - SJ
+      - SK
+      - SL
+      - SM
+      - SN
+      - SO
+      - SR
+      - SS
+      - ST
+      - SV
+      - SX
+      - SY
+      - SZ
+      - TC
+      - TD
+      - TF
+      - TG
+      - TH
+      - TJ
+      - TK
+      - TL
+      - TM
+      - TN
+      - TO
+      - TR
+      - TT
+      - TV
+      - TW
+      - TZ
+      - UA
+      - UG
+      - UM
+      - US
+      - UY
+      - UZ
+      - VA
+      - VC
+      - VE
+      - VG
+      - VI
+      - VN
+      - VU
+      - WF
+      - WS
+      - YE
+      - YT
+      - ZA
+      - ZM
+      - ZW
+      type: string
+      description: |-
+        * `AD` - Andorra
+        * `AE` - United Arab Emirates
+        * `AF` - Afghanistan
+        * `AG` - Antigua & Barbuda
+        * `AI` - Anguilla
+        * `AL` - Albania
+        * `AM` - Armenia
+        * `AO` - Angola
+        * `AQ` - Antarctica
+        * `AR` - Argentina
+        * `AS` - Samoa (American)
+        * `AT` - Austria
+        * `AU` - Australia
+        * `AW` - Aruba
+        * `AX` - Åland Islands
+        * `AZ` - Azerbaijan
+        * `BA` - Bosnia & Herzegovina
+        * `BB` - Barbados
+        * `BD` - Bangladesh
+        * `BE` - Belgium
+        * `BF` - Burkina Faso
+        * `BG` - Bulgaria
+        * `BH` - Bahrain
+        * `BI` - Burundi
+        * `BJ` - Benin
+        * `BL` - St Barthelemy
+        * `BM` - Bermuda
+        * `BN` - Brunei
+        * `BO` - Bolivia
+        * `BQ` - Caribbean NL
+        * `BR` - Brazil
+        * `BS` - Bahamas
+        * `BT` - Bhutan
+        * `BV` - Bouvet Island
+        * `BW` - Botswana
+        * `BY` - Belarus
+        * `BZ` - Belize
+        * `CA` - Canada
+        * `CC` - Cocos (Keeling) Islands
+        * `CD` - Congo (Dem. Rep.)
+        * `CF` - Central African Rep.
+        * `CG` - Congo (Rep.)
+        * `CH` - Switzerland
+        * `CI` - Côte d'Ivoire
+        * `CK` - Cook Islands
+        * `CL` - Chile
+        * `CM` - Cameroon
+        * `CN` - China
+        * `CO` - Colombia
+        * `CR` - Costa Rica
+        * `CU` - Cuba
+        * `CV` - Cape Verde
+        * `CW` - Curaçao
+        * `CX` - Christmas Island
+        * `CY` - Cyprus
+        * `CZ` - Czech Republic
+        * `DE` - Germany
+        * `DJ` - Djibouti
+        * `DK` - Denmark
+        * `DM` - Dominica
+        * `DO` - Dominican Republic
+        * `DZ` - Algeria
+        * `EC` - Ecuador
+        * `EE` - Estonia
+        * `EG` - Egypt
+        * `EH` - Western Sahara
+        * `ER` - Eritrea
+        * `ES` - Spain
+        * `ET` - Ethiopia
+        * `FI` - Finland
+        * `FJ` - Fiji
+        * `FK` - Falkland Islands
+        * `FM` - Micronesia
+        * `FO` - Faroe Islands
+        * `FR` - France
+        * `GA` - Gabon
+        * `GB` - Britain (UK)
+        * `GD` - Grenada
+        * `GE` - Georgia
+        * `GF` - French Guiana
+        * `GG` - Guernsey
+        * `GH` - Ghana
+        * `GI` - Gibraltar
+        * `GL` - Greenland
+        * `GM` - Gambia
+        * `GN` - Guinea
+        * `GP` - Guadeloupe
+        * `GQ` - Equatorial Guinea
+        * `GR` - Greece
+        * `GS` - South Georgia & the South Sandwich Islands
+        * `GT` - Guatemala
+        * `GU` - Guam
+        * `GW` - Guinea-Bissau
+        * `GY` - Guyana
+        * `HK` - Hong Kong
+        * `HM` - Heard Island & McDonald Islands
+        * `HN` - Honduras
+        * `HR` - Croatia
+        * `HT` - Haiti
+        * `HU` - Hungary
+        * `ID` - Indonesia
+        * `IE` - Ireland
+        * `IL` - Israel
+        * `IM` - Isle of Man
+        * `IN` - India
+        * `IO` - British Indian Ocean Territory
+        * `IQ` - Iraq
+        * `IR` - Iran
+        * `IS` - Iceland
+        * `IT` - Italy
+        * `JE` - Jersey
+        * `JM` - Jamaica
+        * `JO` - Jordan
+        * `JP` - Japan
+        * `KE` - Kenya
+        * `KG` - Kyrgyzstan
+        * `KH` - Cambodia
+        * `KI` - Kiribati
+        * `KM` - Comoros
+        * `KN` - St Kitts & Nevis
+        * `KP` - Korea (North)
+        * `KR` - Korea (South)
+        * `KW` - Kuwait
+        * `KY` - Cayman Islands
+        * `KZ` - Kazakhstan
+        * `LA` - Laos
+        * `LB` - Lebanon
+        * `LC` - St Lucia
+        * `LI` - Liechtenstein
+        * `LK` - Sri Lanka
+        * `LR` - Liberia
+        * `LS` - Lesotho
+        * `LT` - Lithuania
+        * `LU` - Luxembourg
+        * `LV` - Latvia
+        * `LY` - Libya
+        * `MA` - Morocco
+        * `MC` - Monaco
+        * `MD` - Moldova
+        * `ME` - Montenegro
+        * `MF` - St Martin (French)
+        * `MG` - Madagascar
+        * `MH` - Marshall Islands
+        * `MK` - North Macedonia
+        * `ML` - Mali
+        * `MM` - Myanmar (Burma)
+        * `MN` - Mongolia
+        * `MO` - Macau
+        * `MP` - Northern Mariana Islands
+        * `MQ` - Martinique
+        * `MR` - Mauritania
+        * `MS` - Montserrat
+        * `MT` - Malta
+        * `MU` - Mauritius
+        * `MV` - Maldives
+        * `MW` - Malawi
+        * `MX` - Mexico
+        * `MY` - Malaysia
+        * `MZ` - Mozambique
+        * `NA` - Namibia
+        * `NC` - New Caledonia
+        * `NE` - Niger
+        * `NF` - Norfolk Island
+        * `NG` - Nigeria
+        * `NI` - Nicaragua
+        * `NL` - Netherlands
+        * `NO` - Norway
+        * `NP` - Nepal
+        * `NR` - Nauru
+        * `NU` - Niue
+        * `NZ` - New Zealand
+        * `OM` - Oman
+        * `PA` - Panama
+        * `PE` - Peru
+        * `PF` - French Polynesia
+        * `PG` - Papua New Guinea
+        * `PH` - Philippines
+        * `PK` - Pakistan
+        * `PL` - Poland
+        * `PM` - St Pierre & Miquelon
+        * `PN` - Pitcairn
+        * `PR` - Puerto Rico
+        * `PS` - Palestine
+        * `PT` - Portugal
+        * `PW` - Palau
+        * `PY` - Paraguay
+        * `QA` - Qatar
+        * `RE` - Réunion
+        * `RO` - Romania
+        * `RS` - Serbia
+        * `RU` - Russia
+        * `RW` - Rwanda
+        * `SA` - Saudi Arabia
+        * `SB` - Solomon Islands
+        * `SC` - Seychelles
+        * `SD` - Sudan
+        * `SE` - Sweden
+        * `SG` - Singapore
+        * `SH` - St Helena
+        * `SI` - Slovenia
+        * `SJ` - Svalbard & Jan Mayen
+        * `SK` - Slovakia
+        * `SL` - Sierra Leone
+        * `SM` - San Marino
+        * `SN` - Senegal
+        * `SO` - Somalia
+        * `SR` - Suriname
+        * `SS` - South Sudan
+        * `ST` - Sao Tome & Principe
+        * `SV` - El Salvador
+        * `SX` - St Maarten (Dutch)
+        * `SY` - Syria
+        * `SZ` - Eswatini (Swaziland)
+        * `TC` - Turks & Caicos Is
+        * `TD` - Chad
+        * `TF` - French S. Terr.
+        * `TG` - Togo
+        * `TH` - Thailand
+        * `TJ` - Tajikistan
+        * `TK` - Tokelau
+        * `TL` - East Timor
+        * `TM` - Turkmenistan
+        * `TN` - Tunisia
+        * `TO` - Tonga
+        * `TR` - Turkey
+        * `TT` - Trinidad & Tobago
+        * `TV` - Tuvalu
+        * `TW` - Taiwan
+        * `TZ` - Tanzania
+        * `UA` - Ukraine
+        * `UG` - Uganda
+        * `UM` - US minor outlying islands
+        * `US` - United States
+        * `UY` - Uruguay
+        * `UZ` - Uzbekistan
+        * `VA` - Vatican City
+        * `VC` - St Vincent
+        * `VE` - Venezuela
+        * `VG` - Virgin Islands (UK)
+        * `VI` - Virgin Islands (US)
+        * `VN` - Vietnam
+        * `VU` - Vanuatu
+        * `WF` - Wallis & Futuna
+        * `WS` - Samoa (western)
+        * `YE` - Yemen
+        * `YT` - Mayotte
+        * `ZA` - South Africa
+        * `ZM` - Zambia
+        * `ZW` - Zimbabwe
     ForgetPassword:
       type: object
       properties:
         email:
           type: string
           format: email
+      required:
+      - email
+    GenderEnum:
+      enum:
+      - Female
+      - Male
+      type: string
+      description: |-
+        * `Female` - Female
+        * `Male` - Male
+    Location:
+      type: object
+      properties:
+        country:
+          type: integer
+        latitude:
+          type: string
+          maxLength: 20
+        longitude:
+          type: string
+          maxLength: 20
+        city:
+          type: string
+          maxLength: 50
+        is_headquarter:
+          type: boolean
+        description:
+          type: string
+      required:
+      - city
+      - country
+      - description
+      - latitude
+      - longitude
+    LocationList:
+      type: object
+      properties:
+        country:
+          type: integer
+        city:
+          type: string
+          maxLength: 50
+        is_headquarter:
+          type: boolean
+        description:
+          type: string
+        edit_url:
+          type: string
+          format: uri
+          readOnly: true
+        detail_url:
+          type: string
+          format: uri
+          readOnly: true
+        delete_url:
+          type: string
+          format: uri
+          readOnly: true
+      required:
+      - city
+      - country
+      - delete_url
+      - description
+      - detail_url
+      - edit_url
+    MartialStatusEnum:
+      enum:
+      - Divorced
+      - Married
+      - Single
+      - Widowed
+      type: string
+      description: |-
+        * `Divorced` - Divorced
+        * `Married` - Married
+        * `Single` - Single
+        * `Widowed` - Widowed
+    PaginatedLocationListList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationList'
+    PaginatedSquadListList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SquadList'
+    PaginatedStaffListList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffList'
+    PaginatedTribeListList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/TribeList'
+    PatchedLocation:
+      type: object
+      properties:
+        country:
+          type: integer
+        latitude:
+          type: string
+          maxLength: 20
+        longitude:
+          type: string
+          maxLength: 20
+        city:
+          type: string
+          maxLength: 50
+        is_headquarter:
+          type: boolean
+        description:
+          type: string
+    PatchedSquad:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        squad_lead:
+          type: integer
+          nullable: true
+    PatchedStaff:
+      type: object
+      description: Seriaizer for creating and updating staff
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+        date_created:
+          type: string
+          format: date-time
+          readOnly: true
+        date_updated:
+          type: string
+          format: date-time
+          readOnly: true
+        unique_id:
+          type: string
+          readOnly: true
+          nullable: true
+        picture:
+          type: string
+          format: uri
+        middle_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        date_of_birth:
+          type: string
+          format: date
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        martial_status:
+          $ref: '#/components/schemas/MartialStatusEnum'
+        alias_email:
+          type: string
+          format: email
+          maxLength: 255
+        role:
+          type: string
+          maxLength: 255
+        phone_number:
+          type: string
+          maxLength: 128
+        work_phone:
+          type: string
+          maxLength: 128
+        city:
+          type: string
+          maxLength: 100
+        next_of_kin_first_name:
+          type: string
+          maxLength: 150
+        next_of_kin_last_name:
+          type: string
+          maxLength: 150
+        next_of_kin_middle_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        country:
+          $ref: '#/components/schemas/CountryEnum'
+        next_of_kin_phone_number:
+          type: string
+          maxLength: 128
+        next_of_kin_email:
+          type: string
+          format: email
+          maxLength: 255
+        next_of_kin_relationship:
+          type: string
+          maxLength: 150
+        suspension_date:
+          type: string
+          format: date
+          nullable: true
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        tribe:
+          type: integer
+          nullable: true
+        squad:
+          type: integer
+          nullable: true
+    PatchedTribe:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        tribe_lead:
+          type: integer
+          nullable: true
+    Region:
+      type: object
+      properties:
+        country:
+          $ref: '#/components/schemas/CountryEnum'
+      required:
+      - country
+    Squad:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        squad_lead:
+          type: integer
+          nullable: true
+      required:
+      - description
+      - id
+      - name
+    SquadList:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        squad_lead:
+          type: integer
+          nullable: true
+        members:
+          type: string
+          readOnly: true
+        date_created:
+          type: string
+          format: date-time
+          readOnly: true
+        url:
+          type: string
+          readOnly: true
+      required:
+      - date_created
+      - members
+      - name
+      - url
+    Staff:
+      type: object
+      description: Seriaizer for creating and updating staff
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+        date_created:
+          type: string
+          format: date-time
+          readOnly: true
+        date_updated:
+          type: string
+          format: date-time
+          readOnly: true
+        unique_id:
+          type: string
+          readOnly: true
+          nullable: true
+        picture:
+          type: string
+          format: uri
+        middle_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        date_of_birth:
+          type: string
+          format: date
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        martial_status:
+          $ref: '#/components/schemas/MartialStatusEnum'
+        alias_email:
+          type: string
+          format: email
+          maxLength: 255
+        role:
+          type: string
+          maxLength: 255
+        phone_number:
+          type: string
+          maxLength: 128
+        work_phone:
+          type: string
+          maxLength: 128
+        city:
+          type: string
+          maxLength: 100
+        next_of_kin_first_name:
+          type: string
+          maxLength: 150
+        next_of_kin_last_name:
+          type: string
+          maxLength: 150
+        next_of_kin_middle_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        country:
+          $ref: '#/components/schemas/CountryEnum'
+        next_of_kin_phone_number:
+          type: string
+          maxLength: 128
+        next_of_kin_email:
+          type: string
+          format: email
+          maxLength: 255
+        next_of_kin_relationship:
+          type: string
+          maxLength: 150
+        suspension_date:
+          type: string
+          format: date
+          nullable: true
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        tribe:
+          type: integer
+          nullable: true
+        squad:
+          type: integer
+          nullable: true
+      required:
+      - alias_email
+      - city
+      - country
+      - date_created
+      - date_of_birth
+      - date_updated
+      - email
+      - first_name
+      - gender
+      - id
+      - last_name
+      - martial_status
+      - next_of_kin_email
+      - next_of_kin_first_name
+      - next_of_kin_last_name
+      - next_of_kin_relationship
+      - phone_number
+      - picture
+      - role
+      - unique_id
+    StaffList:
+      type: object
+      properties:
+        name:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        phone_number:
+          type: string
+          maxLength: 128
+        tribe:
+          type: integer
+          nullable: true
+        squad:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          readOnly: true
+        url:
+          type: string
+          readOnly: true
+        id:
+          type: integer
+          readOnly: true
+        unique_id:
+          type: string
+          readOnly: true
+          nullable: true
+      required:
+      - email
+      - id
+      - name
+      - phone_number
+      - status
+      - unique_id
+      - url
+    Tribe:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        tribe_lead:
+          type: integer
+          nullable: true
+      required:
+      - description
+      - name
+    TribeDetail:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        tribe_lead:
+          type: integer
+          nullable: true
+        num_squads:
+          type: string
+          readOnly: true
+        overall_squad_members:
+          type: string
+          readOnly: true
+        staff_members:
+          type: string
+          readOnly: true
+      required:
+      - description
+      - name
+      - num_squads
+      - overall_squad_members
+      - staff_members
+    TribeList:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        tribe_lead:
+          type: integer
+          nullable: true
+        date_created:
+          type: string
+          format: date-time
+          readOnly: true
+        url:
+          type: string
+          readOnly: true
+        squads:
+          type: array
+          items:
+            type: string
+          readOnly: true
+      required:
+      - date_created
+      - name
+      - squads
+      - url
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 255
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        is_active:
+          type: boolean
       required:
       - email
     UserLogin:
