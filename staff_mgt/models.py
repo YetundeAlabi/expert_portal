@@ -33,9 +33,8 @@ COUNTRY_CHOICES = [
 
 
 class Tribe(BaseModel):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
-    # tribe_lead = models.CharField(max_length=150)
     tribe_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, null=True, blank=True, related_name="tribe_lead")
 
     def get_staff_count(self):
@@ -49,9 +48,8 @@ class Tribe(BaseModel):
 
 
 class Squad(BaseModel):
-    name = models.CharField(max_length=255) #unique
+    name = models.CharField(max_length=255, unique=True) #unique
     description = models.TextField()
-    # squad_lead = models.CharField(max_length=150)
     tribe = models.ForeignKey(Tribe, on_delete=models.SET_NULL, null=True, related_name="squads")
     squad_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, blank = True, null=True, related_name="squad_lead")
 
@@ -83,8 +81,7 @@ class StaffBaseModel(BaseModel):
     next_of_kin_phone_number = PhoneNumberField(blank=True)
     next_of_kin_email = models.EmailField(max_length=255)
     next_of_kin_relationship = models.CharField(max_length=150)
-    suspension_date = models.DateField(blank=True, null=True)
-    # remove suspension date to only staff
+    
     class Meta:
         abstract = True
         
@@ -94,6 +91,7 @@ class Staff(StaffBaseModel):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     is_active = models.BooleanField(default=True)
+    suspension_date = models.DateField(blank=True, null=True)
 
     active_objects = ActiveUserManager()
     objects = models.Manager()

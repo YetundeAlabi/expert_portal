@@ -6,10 +6,12 @@ from rest_framework import status
 
 from staff_mgt.models import Tribe, Squad, Region, Location
 from base.mixins import ActivityLogMixin
-from tribe import serializers
-from .serializers import SquadSerializer, SquadListSerializer,TribeSerializer,TribeListSerializer, RegionSerializer, LocationSerializer, TribeDetailSerializer
+# from tribe import serializers
+from .serializers import SquadSerializer, SquadListSerializer,TribeSerializer,TribeListSerializer, RegionSerializer, LocationSerializer, TribeDetailSerializer, ExportSquadSerializer, LocationListSerializer
+
 # from base.constants import FEMALE, MALE
-from base.utils import export_data
+from base.tasks import  export_data
+from django.core import serializers
 
 
 # Create your views here.
@@ -79,7 +81,7 @@ class ExportTribeAPIView(GenericAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
-        file = export_data(serializer=serializer, file_name=file_name)
+        file = export_data.delay(serializer=serializer, file_name=file_name)
         return file
     
 
@@ -108,8 +110,23 @@ class SquadListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
         return context
 
 
+
+class ExportDataView(APIView):
+    def get(self, request, *args, **kwargs):
+        tribe_pk = self.kwargs["tribe_pk"]
+        queryset = Squad.objects.filter(tribe_id=tribe_pk)
+        serialized_data = serializers.serialize('python', queryset)
+        file_path = './file.csv'  # Specify the desired file path
+
+        # Trigger the Celery task
+        print(serialized_data)
+        # export_model_data_to_csv.delay(serialized_data, file_path)
+
+        return Response({'message': 'Export task has been started.'})
+
+
 class ExportSquadAPIView(GenericAPIView):
-    serializer_class = serializers.ExportSquadSerializer
+    serializer_class = ExportSquadSerializer
 
     def get_queryset(self):
         tribe_pk = self.kwargs["tribe_pk"]
@@ -126,10 +143,20 @@ class ExportSquadAPIView(GenericAPIView):
         file_name = f'{tribe_name}_{model_name}.csv' 
         file_name = file_name.lower()
 
+        file_path = './file.csv'  
         serializer = self.get_serializer(queryset, many=True)
-        file = export_data(serializer=serializer, file_name=file_name)
+        serialized_data = serializer.data
+        header = serializer.child.fields.keys()
+        print(header)
+        # serialized_data = serializers.serialize('python', queryset)
+        print("hi")
+        export_data.delay(serialized_data, file_path=file_path)
+        print("got here")
+        # return file
+        return Response({'message': 'Export task has been started.'})
 
-        return file
+        # return Response({'task_id': file.id})
+
        
     
 
@@ -150,7 +177,7 @@ class LocationUpdateAPIView(ActivityLogMixin, UpdateAPIView):
 
 class LocationListAPIView(ActivityLogMixin, ListAPIView):
     queryset = Location.objects.all()
-    serializer_class = serializers.LocationListSerializer
+    serializer_class = LocationListSerializer
 
     def get_queryset(self):
         return self.queryset.active_objects.all()

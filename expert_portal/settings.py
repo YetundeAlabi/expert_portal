@@ -13,6 +13,7 @@ import os
 import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
+from decouple import config
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,7 +28,9 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", default=0)
+
+# DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -50,6 +53,8 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "phonenumber_field",
     "drf_spectacular",
+    'django_celery_beat',
+    'django_celery_results',
 
     "accounts",
     "staff_mgt",
@@ -60,6 +65,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -173,6 +179,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Expert Data Portal'
 }
 
+#email settings
 EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
@@ -182,3 +189,22 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Celery Settings
+# CELERY_BROKER_URL = config('CELERY_BROKER_REDIS_URL', default='redis://localhost:6379')
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
+
+CELERY_ACCEPT_CONTENT = ['application/json']
+
+CELERY_RESULT_SERIALIZER = 'json'
+# result_serializer = 'json'
+
+CELERY_TASK_SERIALIZER = 'json'
+# task_serializer = 'json'
+
+CELERY_TIMEZONE = 'Africa/Lagos'
+# timezone = 'Africa/Lagos'
+
+CELERY_RESULT_BACKEND = 'django-db'
+# result_backend= 'django-db'

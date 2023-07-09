@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from accounts.serializers import (
     UserLoginSerializer, UserSerializer, ForgetPasswordSerializer, 
     VerifyPinSerializer, ResetPasswordSerializer)
-from base.utils import Util
+from base.tasks import send_email
 # Create your views here.
 
 User = get_user_model()
@@ -68,7 +68,7 @@ class ForgetPasswordView(GenericAPIView):
             body = f'Your verification pin is {otp}'
             data = {"email_body": body, "to_email": email,
                     "email_subject": subject}
-            Util.send_email(data)
+            send_email.delay(data)
             return Response({'message': 'Verification pin sent successfully'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
