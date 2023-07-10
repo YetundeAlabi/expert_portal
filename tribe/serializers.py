@@ -27,6 +27,7 @@ class SquadListSerializer(serializers.ModelSerializer):
 
 class ExportSquadSerializer(serializers.ModelSerializer):
     members = serializers.SerializerMethodField()
+    date_created = serializers.SerializerMethodField()
     
     class Meta:
         model = Squad
@@ -35,6 +36,9 @@ class ExportSquadSerializer(serializers.ModelSerializer):
     def get_members(self, obj):
         return obj.staff_set.count()
 
+    def get_date_created(self, obj):
+        return obj.date_created.date().isoformat()
+        
 
 class TribeSerializer(serializers.ModelSerializer):
 

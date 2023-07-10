@@ -283,16 +283,10 @@ paths:
       operationId: api_staff_list
       description: Mixin to track user actions
       parameters:
-      - name: limit
+      - name: page
         required: false
         in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: offset
-        required: false
-        in: query
-        description: The initial index from which to return the results.
+        description: A page number within the paginated result set.
         schema:
           type: integer
       tags:
@@ -422,21 +416,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Staff'
           description: ''
+  /api/staff/export:
+    get:
+      operationId: api_staff_export_retrieve
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffList'
+          description: ''
   /offices/:
     get:
       operationId: offices_list
       description: Mixin to track user actions
       parameters:
-      - name: limit
+      - name: page
         required: false
         in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: offset
-        required: false
-        in: query
-        description: The initial index from which to return the results.
+        description: A page number within the paginated result set.
         schema:
           type: integer
       tags:
@@ -596,16 +599,10 @@ paths:
       operationId: tribe_list
       description: Mixin to track user actions
       parameters:
-      - name: limit
+      - name: page
         required: false
         in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: offset
-        required: false
-        in: query
-        description: The initial index from which to return the results.
+        description: A page number within the paginated result set.
         schema:
           type: integer
       tags:
@@ -712,16 +709,10 @@ paths:
       operationId: tribe_squads_list
       description: Mixin to track user actions
       parameters:
-      - name: limit
+      - name: page
         required: false
         in: query
-        description: Number of results to return per page.
-        schema:
-          type: integer
-      - name: offset
-        required: false
-        in: query
-        description: The initial index from which to return the results.
+        description: A page number within the paginated result set.
         schema:
           type: integer
       - in: path
@@ -876,6 +867,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/Squad'
           description: ''
+  /tribe/{tribe_pk}/squads/export:
+    get:
+      operationId: tribe_squads_export_retrieve
+      parameters:
+      - in: path
+        name: tribe_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tribe
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportSquad'
+          description: ''
+  /tribe/{tribe_pk}/squads/export-data:
+    get:
+      operationId: tribe_squads_export_data_retrieve
+      parameters:
+      - in: path
+        name: tribe_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tribe
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
   /tribe/create/:
     post:
       operationId: tribe_create_create
@@ -978,10 +1007,6 @@ components:
         next_of_kin_relationship:
           type: string
           maxLength: 150
-        suspension_date:
-          type: string
-          format: date
-          nullable: true
         tribe:
           type: integer
           nullable: true
@@ -1509,6 +1534,26 @@ components:
         * `ZA` - South Africa
         * `ZM` - Zambia
         * `ZW` - Zimbabwe
+    ExportSquad:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        squad_lead:
+          type: integer
+          nullable: true
+        members:
+          type: string
+          readOnly: true
+        date_created:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - date_created
+      - members
+      - name
     ForgetPassword:
       type: object
       properties:
@@ -1602,12 +1647,12 @@ components:
           type: string
           nullable: true
           format: uri
-          example: http://api.example.org/accounts/?offset=400&limit=100
+          example: http://api.example.org/accounts/?page=4
         previous:
           type: string
           nullable: true
           format: uri
-          example: http://api.example.org/accounts/?offset=200&limit=100
+          example: http://api.example.org/accounts/?page=2
         results:
           type: array
           items:
@@ -1622,12 +1667,12 @@ components:
           type: string
           nullable: true
           format: uri
-          example: http://api.example.org/accounts/?offset=400&limit=100
+          example: http://api.example.org/accounts/?page=4
         previous:
           type: string
           nullable: true
           format: uri
-          example: http://api.example.org/accounts/?offset=200&limit=100
+          example: http://api.example.org/accounts/?page=2
         results:
           type: array
           items:
@@ -1642,12 +1687,12 @@ components:
           type: string
           nullable: true
           format: uri
-          example: http://api.example.org/accounts/?offset=400&limit=100
+          example: http://api.example.org/accounts/?page=4
         previous:
           type: string
           nullable: true
           format: uri
-          example: http://api.example.org/accounts/?offset=200&limit=100
+          example: http://api.example.org/accounts/?page=2
         results:
           type: array
           items:
@@ -1662,12 +1707,12 @@ components:
           type: string
           nullable: true
           format: uri
-          example: http://api.example.org/accounts/?offset=400&limit=100
+          example: http://api.example.org/accounts/?page=4
         previous:
           type: string
           nullable: true
           format: uri
-          example: http://api.example.org/accounts/?offset=200&limit=100
+          example: http://api.example.org/accounts/?page=2
         results:
           type: array
           items:
@@ -1778,16 +1823,16 @@ components:
         next_of_kin_relationship:
           type: string
           maxLength: 150
-        suspension_date:
-          type: string
-          format: date
-          nullable: true
         first_name:
           type: string
           maxLength: 150
         last_name:
           type: string
           maxLength: 150
+        suspension_date:
+          type: string
+          format: date
+          nullable: true
         tribe:
           type: integer
           nullable: true
@@ -1928,16 +1973,16 @@ components:
         next_of_kin_relationship:
           type: string
           maxLength: 150
-        suspension_date:
-          type: string
-          format: date
-          nullable: true
         first_name:
           type: string
           maxLength: 150
         last_name:
           type: string
           maxLength: 150
+        suspension_date:
+          type: string
+          format: date
+          nullable: true
         tribe:
           type: integer
           nullable: true

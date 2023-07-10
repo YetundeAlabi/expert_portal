@@ -82,7 +82,10 @@ class ExportStaffAPIView(GenericAPIView):
     def get(self, request, *args, **kwargs):
         model_name = self.get_serializer().Meta.model.__name__
         file_name = f'{model_name.lower()}.csv'
-        queryset = self.get_queryset()
+        staff_ids = request.data.get('staff_ids', [])
+
+        queryset = self.get_queryset.filter(id__in=staff_ids)
+        # queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
         file = export_data.delay(serializer=serializer, file_name=file_name)
@@ -109,6 +112,7 @@ class SuspendStaffAPIView(ActivityLogMixin, UpdateAPIView):
 
     def patch(self, request, *args, **kwargs):
         instance = self.get_object()
+        
         instance.is_active = not instance.is_active
         instance.save(update_fields=["is_active"])
         serializer = StaffSerializer(instance=instance, data=request.data)
