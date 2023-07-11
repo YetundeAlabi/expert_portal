@@ -10,7 +10,7 @@ from tribe import serializers
 from .serializers import SquadSerializer, SquadListSerializer,TribeSerializer,TribeListSerializer, RegionSerializer, LocationSerializer, TribeDetailSerializer, ExportSquadSerializer, LocationListSerializer
 
 # from base.constants import FEMALE, MALE
-from base.tasks import  export_data
+from base.utils import  export_data
 
 
 

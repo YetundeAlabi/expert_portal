@@ -18,12 +18,12 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
-app.conf.beat_schedule = {
-    "run_every_12:00am": {
-    "task": 'tasks.suspend_staff',
-    "schedule" : crontab(minute=0, hour=0), # Executes every morning at 12:00 a.m
-    }
-}
+# app.conf.beat_schedule = {
+#     "run_every_12:00am": {
+#     "task": 'tasks.suspend_staff',
+#     "schedule" : crontab(minute=0, hour=0), # Executes every morning at 12:00 a.m
+#     }
+# }
 
 # We used CELERY_BROKER_URL in settings.py instead of:
 # app.conf.broker_url = ''

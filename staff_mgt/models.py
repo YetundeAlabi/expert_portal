@@ -62,7 +62,7 @@ class Squad(BaseModel):
 
 class StaffBaseModel(BaseModel):
     unique_id = models.CharField(max_length=8, null=True, blank=True, editable=False)
-    picture = models.ImageField(upload_to="accounts/media", )
+    picture = models.ImageField(upload_to="media/", )
     middle_name = models.CharField(max_length=150, blank=True, null=True)
     date_of_birth = models.DateField()
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)

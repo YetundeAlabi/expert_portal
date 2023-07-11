@@ -7,7 +7,8 @@ from .models import Staff, Tribe, Squad, Admin
 from base.mixins import ActivityLogMixin
 from .serializers import StaffSerializer, StaffListSerializer, AdminSerializer, SuspendStaffSerializer
 from base.constants import FEMALE, MALE
-from base.tasks import export_data, suspend_staff
+from base.utils import export_data
+from .tasks import suspend_staff
 
 
 class DashboardAPIView(ActivityLogMixin, GenericAPIView):
@@ -90,11 +91,6 @@ class ExportStaffAPIView(GenericAPIView):
 
         file = export_data(serializer=serializer, file_name=file_name)
         return file
-
-# class StaffUpdateAPIView(UpdateAPIView):
-#     queryset = Staff.objects.all()
-#     serializer_class = StaffSerializer
-#     lookup_field = "pk"
 
 
 class AdminDetailAPIView(ActivityLogMixin, RetrieveAPIView):

@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from accounts.serializers import (
     UserLoginSerializer, UserSerializer, ForgetPasswordSerializer, 
     VerifyPinSerializer, ResetPasswordSerializer)
-from base.tasks import send_email
+from .tasks import send_email
 # Create your views here.
 
 User = get_user_model()
@@ -52,6 +52,9 @@ class LogoutView(GenericAPIView):
 
 class ForgetPasswordView(GenericAPIView):
     serializer_class = ForgetPasswordSerializer
+    authentication_classes = ()
+    permission_classes = []
+
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
@@ -75,6 +78,8 @@ class ForgetPasswordView(GenericAPIView):
 
 class VerifyPinView(GenericAPIView):
     serializer_class = VerifyPinSerializer
+    authentication_classes = ()
+    permission_classes = []
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -92,6 +97,8 @@ class VerifyPinView(GenericAPIView):
 
 class ResetPasswordView(GenericAPIView):
     serializer_class = ResetPasswordSerializer
+    authentication_classes = ()
+    permission_classes = []
 
     def post(self, request):
         serilizer = self.get_serializer(data=request.data)

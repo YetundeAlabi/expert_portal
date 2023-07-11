@@ -1,9 +1,12 @@
+from django.utils import timezone
 
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from base import validators
 from staff_mgt.models import Staff, Admin
 from accounts.serializers import UserSerializer
+
+today = timezone.now().date()
 
 class StaffSerializer(serializers.ModelSerializer):
     """Seriaizer for creating and updating staff"""
@@ -45,5 +48,10 @@ class AdminSerializer(serializers.ModelSerializer):
 
 class SuspendStaffSerializer(serializers.Serializer):
     suspension_date = serializers.DateTimeField(required=False)
+
+    def valid_suspension_date(self, value):
+        if value <= today:
+            raise serializers.ValidationError('suspension date cannot be later than today')
+
 
 
