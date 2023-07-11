@@ -113,8 +113,10 @@ class SuspendStaffAPIView(ActivityLogMixin, UpdateAPIView):
         instance = self.get_object()
         print(instance)
         if suspension_date:
-            suspend_staff(instance).apply_async(eta=suspension_date)
-        suspend_staff(instance)
+            instance.suspension_date = suspension_date
+            suspend_staff.delay()
+        
+        instance.is_active = not instance.is_active
         
         serializer = StaffSerializer(instance=instance)
         
