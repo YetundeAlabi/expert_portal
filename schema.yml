@@ -388,6 +388,71 @@ paths:
               schema:
                 $ref: '#/components/schemas/Staff'
           description: ''
+  /api/staff/{id}/suspend:
+    put:
+      operationId: api_staff_suspend_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuspendStaff'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SuspendStaff'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SuspendStaff'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuspendStaff'
+          description: ''
+    patch:
+      operationId: api_staff_suspend_partial_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSuspendStaff'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSuspendStaff'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSuspendStaff'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuspendStaff'
+          description: ''
   /api/staff/create:
     post:
       operationId: api_staff_create_create
@@ -868,8 +933,8 @@ paths:
                 $ref: '#/components/schemas/Squad'
           description: ''
   /tribe/{tribe_pk}/squads/export:
-    get:
-      operationId: tribe_squads_export_retrieve
+    post:
+      operationId: tribe_squads_export_create
       parameters:
       - in: path
         name: tribe_pk
@@ -878,6 +943,18 @@ paths:
         required: true
       tags:
       - tribe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportSquad'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExportSquad'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExportSquad'
+        required: true
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -888,24 +965,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExportSquad'
           description: ''
-  /tribe/{tribe_pk}/squads/export-data:
-    get:
-      operationId: tribe_squads_export_data_retrieve
-      parameters:
-      - in: path
-        name: tribe_pk
-        schema:
-          type: integer
-        required: true
-      tags:
-      - tribe
-      security:
-      - jwtAuth: []
-      - cookieAuth: []
-      responses:
-        '200':
-          description: No response body
-  /tribe/create/:
+  /tribe/create:
     post:
       operationId: tribe_create_create
       description: Mixin to track user actions
@@ -1548,7 +1608,6 @@ components:
           readOnly: true
         date_created:
           type: string
-          format: date-time
           readOnly: true
       required:
       - date_created
@@ -1839,6 +1898,12 @@ components:
         squad:
           type: integer
           nullable: true
+    PatchedSuspendStaff:
+      type: object
+      properties:
+        suspension_date:
+          type: string
+          format: date-time
     PatchedTribe:
       type: object
       properties:
@@ -2050,6 +2115,12 @@ components:
       - status
       - unique_id
       - url
+    SuspendStaff:
+      type: object
+      properties:
+        suspension_date:
+          type: string
+          format: date-time
     Tribe:
       type: object
       properties:

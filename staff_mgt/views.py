@@ -5,9 +5,9 @@ from rest_framework import status
 
 from .models import Staff, Tribe, Squad, Admin
 from base.mixins import ActivityLogMixin
-from .serializers import StaffSerializer, StaffListSerializer, AdminSerializer
+from .serializers import StaffSerializer, StaffListSerializer, AdminSerializer, SuspendStaffSerializer
 from base.constants import FEMALE, MALE
-from base.tasks import export_data
+from base.tasks import export_data, suspend_staff
 
 
 class DashboardAPIView(ActivityLogMixin, GenericAPIView):
@@ -88,7 +88,7 @@ class ExportStaffAPIView(GenericAPIView):
         # queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
-        file = export_data.delay(serializer=serializer, file_name=file_name)
+        file = export_data(serializer=serializer, file_name=file_name)
         return file
 
 # class StaffUpdateAPIView(UpdateAPIView):
@@ -104,28 +104,20 @@ class AdminDetailAPIView(ActivityLogMixin, RetrieveAPIView):
 
 class SuspendStaffAPIView(ActivityLogMixin, UpdateAPIView):
     queryset = Staff.objects.all()
-    serializer_class = StaffSerializer
-
-    # def get_object(self):
-    #     staff_id = self.kwargs['pk']
-    #     return self.queryset.filter(pk=staff_id)
+    serializer_class = SuspendStaffSerializer
 
     def patch(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        suspension_date = serializer.validated_data
         instance = self.get_object()
+        print(instance)
+        if suspension_date:
+            suspend_staff(instance).apply_async(eta=suspension_date)
+        suspend_staff(instance)
         
-        instance.is_active = not instance.is_active
-        instance.save(update_fields=["is_active"])
-        serializer = StaffSerializer(instance=instance, data=request.data)
-        if serializer.is_valid():
-            
-            serializer.save()
+        serializer = StaffSerializer(instance=instance)
+        
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        # instance = self.get_object()
-        # instance.response = request.data.get('response', instance.response)
-        # instance.is_responded = True
-        # instance.save(update_fields=['response', 'is_responded'])
-        # serializer = self.get_serializer(instance)
-        # return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        

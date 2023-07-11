@@ -135,6 +135,7 @@ class LocationListSerializer(serializers.ModelSerializer):
         lookup_field = "pk",
         read_only =True
     )
+    
     detail_url = serializers.HyperlinkedIdentityField(
         view_name="location_detail",
         lookup_field = "pk",

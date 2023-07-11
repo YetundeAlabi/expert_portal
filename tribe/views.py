@@ -80,7 +80,7 @@ class ExportTribeAPIView(GenericAPIView):
         file_name = f'{model_name.lower()}.csv'
         tribe_ids = request.data.get('tribe_ids', [])
 
-        queryset = self.get_queryset.filter(id__in=tribe_ids)
+        queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
         file = export_data(serializer=serializer, file_name=file_name)
@@ -98,6 +98,11 @@ class SquadDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
     
 class SquadListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
     queryset = Squad.objects.all()
+    def get_queryset(self):
+        tribe_pk = self.kwargs["tribe_pk"]
+        if self.request.method == 'GET':
+            return self.queryset.filter(tribe_id=tribe_pk)
+        return self.get_queryset()
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -120,13 +125,6 @@ class ExportSquadAPIView(GenericAPIView):
         return Squad.objects.filter(tribe_id=tribe_pk)
     
     def post(self, request, *args, **kwargs):
-        #  serialize incoming ids
-        # serializer = self.get_serializer(data=request.data)
-        # serializer.is_valid(raise_exception=True)
-        # squad_ids = serializer.validated_data
-        squad_ids = request.data.get('squad_ids', [])
-        queryset = self.get_queryset().filter(id__in=squad_ids)
-
         # get tribe and squad name as file name e.g innovation_and_technology_squad.csv/ ACEL_squad.csv
         tribe_pk = self.kwargs["tribe_pk"]
         tribe = Tribe.objects.get(pk=tribe_pk)
@@ -134,6 +132,8 @@ class ExportSquadAPIView(GenericAPIView):
         model_name = self.get_serializer().Meta.model.__name__
         file_name = f'{tribe_name}_{model_name}.csv' 
         file_name = file_name.lower()
+
+        queryset = self.get_queryset()
 
         serializer = self.get_serializer(queryset, many=True)
         file = export_data(serializer=serializer, file_name=file_name)

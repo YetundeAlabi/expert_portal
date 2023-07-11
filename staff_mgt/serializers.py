@@ -13,12 +13,12 @@ class StaffSerializer(serializers.ModelSerializer):
         model = Staff
         read_only_fields = ["id", "unique_id"]
         exclude = ["is_active"]
-
+        
 
 class StaffListSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField(read_only=True)
-
+    
     class Meta:
         model = Staff
         fields = ["name", "email", "phone_number", "tribe", "squad", "status",
@@ -34,7 +34,6 @@ class StaffListSerializer(serializers.ModelSerializer):
         return reverse("staff_mgt:staff_retrieve_update", kwargs={"pk": obj.pk}, request=request)
 
 
-
 class AdminSerializer(serializers.ModelSerializer):
     user = UserSerializer()
 
@@ -45,6 +44,6 @@ class AdminSerializer(serializers.ModelSerializer):
         
 
 class SuspendStaffSerializer(serializers.Serializer):
-    suspension_date = serializers.DateField()
+    suspension_date = serializers.DateTimeField(required=False)
 
 

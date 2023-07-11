@@ -8,6 +8,7 @@ urlpatterns = [
     path("staff/create", views.StaffCreateAPIView.as_view(), name="create_staff"),
     path("staff/", views.StaffListAPIView.as_view(), name="staff_list"),
     path("staff/<int:pk>/", views.StaffRetrieveUpdateAPIView.as_view(), name="staff_retrieve_update"),
+    path("staff/<int:pk>/suspend", views.SuspendStaffAPIView.as_view(), name="suspend_staff"),
     path("staff/export", views.ExportStaffAPIView.as_view(), name="staff_export"),
     path("admin/<int:pk>/", views.AdminDetailAPIView.as_view(), name="admin-detail")
 ]

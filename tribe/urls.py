@@ -4,7 +4,7 @@ from tribe import views
 
 app_name = "tribe"
 urlpatterns = [
-    path("create/", views.TribeCreateAPIView.as_view(), name="create_tribe"),
+    path("create", views.TribeCreateAPIView.as_view(), name="create_tribe"),
     path("", views.TribeListAPIView.as_view(), name="tribe_list"),
     path("<int:pk>/", views.TribeDetailUpdateAPIView.as_view(), name="tribe_detail_update"),
     # path("<int:pk>/update", views.TribeUpdateAPIView.as_view(), name="tribe_update"),
