@@ -1,3 +1,6 @@
 from django.contrib import admin
+from tribe.models import Tribe, Squad
 
-# Register your models here.
+admin.site.register(Tribe)
+admin.site.register(Squad)
+

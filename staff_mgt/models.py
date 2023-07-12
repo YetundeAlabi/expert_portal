@@ -6,14 +6,13 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.crypto import get_random_string
 from django.contrib.auth import get_user_model
+
+
 from phonenumber_field.modelfields import PhoneNumberField
 
-
-from base.constants import (FEMALE, MALE, DIVORCED, MARRIED, SINGLE, WIDOWED,
-                            NIGERIA, KENYA, UGANDA, UNITED_STATES)
-from base.managers import ActiveManager, ActiveUserManager
-from base.models import BaseModel, DeletableBaseModel
-
+from base.managers import ActiveUserManager
+from base.models import BaseModel
+from base.constants import FEMALE, MALE, DIVORCED, MARRIED, SINGLE, WIDOWED
 
 User= get_user_model()
 
@@ -29,59 +28,6 @@ MARTIAL_STATUS_CHOICES = [
     (WIDOWED, WIDOWED),
 ]
 
-COUNTRY_CHOICES = [
-    (NIGERIA, NIGERIA),
-    (UGANDA, UGANDA),
-    (KENYA, KENYA),
-    (UNITED_STATES, UNITED_STATES),
-]
-
-# COUNTRY_CHOICES = [
-#     (country, country) for code, country in country_names.items()
-# ]
-
-class Tribe(BaseModel):
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField()
-    tribe_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, null=True, blank=True, related_name="tribe_lead")
-
-    def get_staff_count(self):
-       return self.staff_set.count()
-    
-    def get_squad_count(self):
-        return self.squads.count()
-
-    def __str__(self):
-        return self.name
-
-
-class Squad(BaseModel):
-    name = models.CharField(max_length=255, unique=True, db_index=True) 
-    description = models.TextField()
-    tribe = models.ForeignKey(Tribe, on_delete=models.SET_NULL, null=True, related_name="squads")
-    squad_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, blank = True, null=True, related_name="squad_lead")
-
-    def get_member_count(self):
-        return self.staff_set.count()
-    
-    def __str__(self):
-        return self.name
-
-
-class Country(models.Model):
-    name = models.CharField(max_length=50,choices=COUNTRY_CHOICES, db_index=True)
-
-    def __str__(self):
-        return self.name
-  
-
-class City(models.Model):
-    name = models.CharField(max_length=50, db_index=True)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True, related_name="cities")
-
-    def __str__(self):
-        return self.name
-
 
 class StaffBaseModel(BaseModel):
     unique_id = models.CharField(max_length=8, null=True, blank=True, editable=False)
@@ -91,16 +37,16 @@ class StaffBaseModel(BaseModel):
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
     martial_status = models.CharField(max_length=20, choices=MARTIAL_STATUS_CHOICES)
     alias_email = models.EmailField(max_length=255)
-    tribe = models.ForeignKey(Tribe, on_delete=models.SET_NULL, null=True, blank=True)
-    squad = models.ForeignKey(Squad, on_delete=models.SET_NULL, null=True, blank=True)
+    tribe = models.ForeignKey('tribe.Tribe', on_delete=models.SET_NULL, null=True, blank=True) #to avoid circular import error
+    squad = models.ForeignKey('tribe.Squad', on_delete=models.SET_NULL, null=True, blank=True)
     role = models.CharField(max_length=255)
     phone_number = PhoneNumberField()
     work_phone = PhoneNumberField(blank=True)
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
+    city = models.ForeignKey('offices.City', on_delete=models.SET_NULL, null=True)
     next_of_kin_first_name = models.CharField(max_length=150)
     next_of_kin_last_name = models.CharField(max_length=150)
     next_of_kin_middle_name = models.CharField(max_length=150, blank=True, null=True)
-    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True)
+    country = models.ForeignKey("offices.Country", on_delete=models.SET_NULL, null=True)
     next_of_kin_phone_number = PhoneNumberField(blank=True)
     next_of_kin_email = models.EmailField(max_length=255)
     next_of_kin_relationship = models.CharField(max_length=150)
@@ -163,20 +109,3 @@ def generate_unique_identifier(sender, instance, **kwargs):
         unique_id = f"{random_alphabet}{random_digits}"
         instance.unique_id = unique_id
 
-
-
-# class Region(models.model):
-#     country = models.CharField(max_length=50, choices=COUNTRY_CHOICES)
-#     city = models.CharField(max_length=50, db_index=True)
-
-
-class Location(DeletableBaseModel):
-    description = models.TextField()
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
-    latitude = models.CharField(max_length=20)
-    longitude = models.CharField(max_length=20)
-    is_headquarter = models.BooleanField(default=False)
-    
-    def __str__(self):
-        return f'{self.city},{self.country}'

@@ -5,18 +5,12 @@ from rest_framework.views import APIView
 from rest_framework import status,filters
 from django_filters.rest_framework import DjangoFilterBackend
 
-
-from staff_mgt.models import Tribe, Squad, City, Location, Country
+from tribe.models import Tribe, Squad
 from base.mixins import ActivityLogMixin
 from tribe import serializers
-from .serializers import SquadSerializer, SquadListSerializer,TribeSerializer,TribeListSerializer, LocationSerializer, TribeDetailSerializer, CitySerializer, LocationListSerializer
-
-# from base.constants import FEMALE, MALE
+from tribe.serializers import SquadSerializer, SquadListSerializer,TribeSerializer,TribeListSerializer, TribeDetailSerializer
 from base.utils import  export_data
 
-
-
-# Create your views here.
 
 class TribeCreateAPIView(ActivityLogMixin, GenericAPIView):
     queryset = Tribe.objects.all()
@@ -25,7 +19,6 @@ class TribeCreateAPIView(ActivityLogMixin, GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            
             serializer.save()
             data = serializer.data
            
@@ -37,6 +30,7 @@ class TribeListAPIView(ActivityLogMixin, ListAPIView):
     serializer_class = TribeListSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ["name", "squad__name"]
+
     def get_queryset(self):
         return Tribe.objects.prefetch_related("squads")
     
@@ -139,68 +133,10 @@ class ExportSquadAPIView(GenericAPIView):
         file_name = file_name.lower()
 
         queryset = self.get_queryset()
-
         serializer = self.get_serializer(queryset, many=True)
         file = export_data(serializer=serializer, file_name=file_name)
 
         return file
 
-
-class CountryListAPIView(ActivityLogMixin, generics.ListAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
-
-
-class CityListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
-    queryset = City.objects.all()
-    
-    def get_queryset(self):
-        country_pk = self.kwargs["country_pk"]
-        return City.objects.filter(country_id=country_pk)
-    
-    def get_serializer_class(self):
-        if self.request.method == "GET":
-            return serializers.CityListSerializer
-        return serializers.CitySerializer
-    
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context["country_id"] = self.kwargs["country_pk"]
-        context["request"] = self.request
-        return context
-
-
-class LocationListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
-
-    def get_queryset(self):
-        if self.request.method == "GET":
-            return self.queryset.active_objects.all()
-        return super().get_queryset()
-
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return LocationListSerializer
-        return LocationSerializer
-   
-         
-class LocationUpdateAPIView(ActivityLogMixin, UpdateAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
-
-
-class LocationDestroyAPIView(ActivityLogMixin, generics.DestroyAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response({"message": "address has been deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-
-    def perform_destroy(self, instance):
-        instance.is_deleted = True
-        instance.save(update_fields=["is_deleted"])
 
 

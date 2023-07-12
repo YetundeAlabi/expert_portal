@@ -1,16 +1,15 @@
 from rest_framework.generics import RetrieveAPIView, GenericAPIView, UpdateAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework import status, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 
-from .models import Staff, Tribe, Squad, Admin
+from staff_mgt.models import Staff, Admin
+from tribe.models import Tribe, Squad
 from base.mixins import ActivityLogMixin
 from .serializers import StaffSerializer, StaffListSerializer, AdminSerializer, SuspendStaffSerializer
 from base.constants import FEMALE, MALE
 from base.utils import export_data
-from .tasks import suspend_staff
 
 
 class DashboardAPIView(ActivityLogMixin, GenericAPIView):

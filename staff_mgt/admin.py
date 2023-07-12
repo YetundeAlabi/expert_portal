@@ -1,10 +1,6 @@
 from django.contrib import admin
-from .models import Tribe, Squad, Location, Staff, Country, Admin, City
+from staff_mgt.models import Staff, Admin
 # Register your models here.
-admin.site.register(Tribe)
-admin.site.register(Squad)
+
 admin.site.register(Staff)
-admin.site.register(Country)
-admin.site.register(Location)
 admin.site.register(Admin)
-admin.site.register(City)
