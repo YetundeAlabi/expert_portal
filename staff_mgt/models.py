@@ -46,8 +46,8 @@ class OfficeAddress(DeletableBaseModel):
     description = models.TextField()
     city = models.CharField(max_length=100)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
-    latitude = models.CharField(max_length=20)
-    longitude = models.CharField(max_length=20)
+    latitude = models.CharField(max_length=20, null=True, blank=True)
+    longitude = models.CharField(max_length=20, null=True, blank=True)
     is_headquarter = models.BooleanField(default=False)
     
     def __str__(self):
