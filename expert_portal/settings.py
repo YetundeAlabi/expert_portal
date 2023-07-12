@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 # Quick-start development settings - unsuitable for production
@@ -102,18 +103,21 @@ WSGI_APPLICATION = "expert_portal.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": os.environ.get("DB_NAME"),
+#         "USER": os.environ.get("DB_USER"),
+#         "PASSWORD": os.environ.get("DB_PASS"),
+#         "PORT": os.environ.get("DB_PORT"),
+#         "HOST": os.environ.get("DB_HOST")
+
+#     }
+# }
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASS"),
-        "PORT": os.environ.get("DB_PORT"),
-        "HOST": os.environ.get("DB_HOST")
-
-    }
+    "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=1000)
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
