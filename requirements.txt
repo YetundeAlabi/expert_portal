@@ -14,6 +14,7 @@ Django==4.2.3
 django-celery-beat==2.5.0
 django-celery-results==2.5.1
 django-cors-headers==4.1.0
+django-filter==23.2
 django-phonenumber-field==7.1.0
 django-ssl-smtp==2.0.0
 django-timezone-field==5.1
@@ -25,8 +26,6 @@ inflection==0.5.1
 jsonschema==4.18.0
 jsonschema-specifications==2023.6.1
 kombu==5.3.1
-numpy==1.25.1
-pandas==2.0.3
 phonenumberslite==8.13.15
 Pillow==10.0.0
 prompt-toolkit==3.0.39

@@ -19,8 +19,9 @@ class CitySerializer(serializers.ModelSerializer):
         fields = ["country", "name"]
 
     def create(self, validated_data):
+        name = validated_data.get("name")
         country_id = self.context.get('country_id')
-        return City.objects.create(**validated_data, country_id=country_id)
+        return City.objects.create(name=name, country_id=country_id)
 
 
 class CityListSerializer(serializers.ModelSerializer):

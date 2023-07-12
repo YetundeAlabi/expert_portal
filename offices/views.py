@@ -40,7 +40,7 @@ class LocationListCreateAPIView(ActivityLogMixin, ListCreateAPIView):
 
     def get_queryset(self):
         if self.request.method == "GET":
-            return self.queryset.active_objects.all()
+            return Location.active_objects.all()
         return super().get_queryset()
 
     def get_serializer_class(self):

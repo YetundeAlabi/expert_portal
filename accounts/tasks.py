@@ -1,7 +1,4 @@
 import smtplib
-import csv
-import pandas as pd
-from celery import app
 
 from django.http import HttpResponse
 

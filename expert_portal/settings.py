@@ -20,7 +20,6 @@ from dotenv import load_dotenv
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 # Quick-start development settings - unsuitable for production
@@ -58,6 +57,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     'django_celery_beat',
     'django_celery_results',
+    'django_filters',
 
     "accounts",
     "staff_mgt",
@@ -108,14 +108,13 @@ DATABASES = {
         "NAME": os.environ.get("DB_NAME"),
         "USER": os.environ.get("DB_USER"),
         "PASSWORD": os.environ.get("DB_PASS"),
-        "PORT": "5432",
+        "PORT": os.environ.get("DB_PORT"),
+        "HOST": os.environ.get("DB_HOST")
 
     }
 }
 
-# DATABASES = {
-#     "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=1000)
-# }
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
