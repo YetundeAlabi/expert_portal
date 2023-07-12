@@ -1,8 +1,8 @@
 from rest_framework.reverse import reverse
 from rest_framework import serializers
 
-from tribe.models import Tribe, Squad
-from staff_mgt.models import Staff
+# from tribe.models import Tribe, Squad
+from staff_mgt.models import Staff, Tribe, Squad
 
 class SquadListSerializer(serializers.ModelSerializer):
     members = serializers.SerializerMethodField()

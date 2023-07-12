@@ -1,62 +1,50 @@
-from rest_framework.generics import DestroyAPIView, UpdateAPIView, ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import DestroyAPIView, UpdateAPIView, ListAPIView, CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status, filters
 
-from offices.models import City, Location, Country
+from staff_mgt.models import Region, OfficeAddress
 from base.mixins import ActivityLogMixin
-from offices.serializers import  LocationSerializer, CitySerializer, LocationListSerializer, CityListSerializer, CountrySerializer
+from offices.serializers import  RegionSerializer, OfficeAddressSerializer, OfficeAddressListSerializer, OfficeCityAddressSerializer
 
 # Create your views here.
 
-class CountryListAPIView(ActivityLogMixin, ListAPIView):
-    queryset = Country.objects.all()
-    serializer_class = CountrySerializer
+# class CountryListAPIView(ActivityLogMixin, ListAPIView):
+#     queryset = Country.objects.all()
+#     serializer_class = CountrySerializer
 
 
-class CityListCreateAPIView(ActivityLogMixin, ListCreateAPIView):
-    queryset = City.objects.all()
+class OfficeAddressCreateAPIView(ActivityLogMixin, CreateAPIView):
+    queryset = OfficeAddress.objects.all()
+    serilizer_class = OfficeAddressSerializer
     
     def get_queryset(self):
-        country_pk = self.kwargs["country_pk"]
-        return City.objects.filter(country_id=country_pk)
-    
-    def get_serializer_class(self):
-        if self.request.method == "GET":
-            return CityListSerializer
-        return CitySerializer
+        region_pk = self.kwargs["region_pk"]
+        return OfficeAddress.objects.filter(region_id=region_pk)
     
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context["country_id"] = self.kwargs["country_pk"]
+        context["region_id"] = self.kwargs["region_pk"]
         context["request"] = self.request
         return context
 
 
-class LocationListCreateAPIView(ActivityLogMixin, ListCreateAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
+class OfficeAddressListAPIView(ActivityLogMixin, ListAPIView):
+    serializer_class = OfficeAddressListSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ["city__name", "country__name"]
+    search_fields = ["city", "region__name"]
 
     def get_queryset(self):
-        if self.request.method == "GET":
-            return Location.active_objects.all()
-        return super().get_queryset()
+        return OfficeAddress.active_objects.all()
 
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return LocationListSerializer
-        return LocationSerializer
-   
          
-class LocationUpdateAPIView(ActivityLogMixin, UpdateAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
+class OfficeAddressUpdateAPIView(ActivityLogMixin, UpdateAPIView):
+    queryset = OfficeAddress.objects.all()
+    serializer_class = OfficeAddressSerializer
 
 
-class LocationDestroyAPIView(ActivityLogMixin, DestroyAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
+class OfficeAddressDestroyAPIView(ActivityLogMixin, DestroyAPIView):
+    queryset = OfficeAddress.objects.all()
+    serializer_class = OfficeAddressSerializer
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from offices.models import City, Country, Location
+from staff_mgt.models import Region, OfficeAddress
 
-admin.site.register(Country)
-admin.site.register(City)
-admin.site.register(Location)
+admin.site.register(Region)
+admin.site.register(OfficeAddress)

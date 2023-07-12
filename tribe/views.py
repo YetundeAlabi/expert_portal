@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework import status,filters
 from django_filters.rest_framework import DjangoFilterBackend
 
-from tribe.models import Tribe, Squad
+from staff_mgt.models import Tribe, Squad
 from base.mixins import ActivityLogMixin
 from tribe import serializers
 from tribe.serializers import SquadSerializer, SquadListSerializer,TribeSerializer,TribeListSerializer, TribeDetailSerializer

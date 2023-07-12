@@ -4,8 +4,8 @@ from rest_framework import status, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 
-from staff_mgt.models import Staff, Admin
-from tribe.models import Tribe, Squad
+from staff_mgt.models import Staff, Admin, Tribe, Squad
+
 from base.mixins import ActivityLogMixin
 from .serializers import StaffSerializer, StaffListSerializer, AdminSerializer, SuspendStaffSerializer
 from base.constants import FEMALE, MALE
@@ -102,7 +102,7 @@ class AdminDetailAPIView(ActivityLogMixin, RetrieveAPIView):
     serializer_class = AdminSerializer
 
 
-class SuspendStaffAPIView(ActivityLogMixin, UpdateAPIView):
+class SuspendStaffAPIView(ActivityLogMixin, GenericAPIView):
     queryset = Staff.objects.all()
     serializer_class = SuspendStaffSerializer
 
