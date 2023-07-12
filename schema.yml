@@ -3,28 +3,6 @@ info:
   title: Expert Data Portal
   version: 0.0.0
 paths:
-  /api/admin/{id}/:
-    get:
-      operationId: api_admin_retrieve
-      description: Mixin to track user actions
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        required: true
-      tags:
-      - api
-      security:
-      - jwtAuth: []
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Admin'
-          description: ''
   /api/auth/forget-password/:
     post:
       operationId: api_auth_forget_password_create
@@ -111,10 +89,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/VerifyPin'
           description: ''
-  /api/dashboard/:
+  /api/offices/office/countries:
     get:
-      operationId: api_dashboard_retrieve
-      description: An endpoint to get dashboard paramaters
+      operationId: api_offices_office_countries_list
+      description: Mixin to track user actions
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
       tags:
       - api
       security:
@@ -125,7 +110,208 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StaffList'
+                $ref: '#/components/schemas/PaginatedCountryList'
+          description: ''
+  /api/offices/office/countries/{country_pk}/cities:
+    get:
+      operationId: api_offices_office_countries_cities_list
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: country_pk
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCityListList'
+          description: ''
+    post:
+      operationId: api_offices_office_countries_cities_create
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: country_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/City'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/City'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/City'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/City'
+          description: ''
+  /api/offices/offices/{id}/delete:
+    delete:
+      operationId: api_offices_offices_delete_destroy
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/offices/offices/{id}/update:
+    put:
+      operationId: api_offices_offices_update_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Location'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Location'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+    patch:
+      operationId: api_offices_offices_update_partial_update
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLocation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedLocation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedLocation'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+  /api/offices/offices/create/:
+    get:
+      operationId: api_offices_offices_create_list
+      description: Mixin to track user actions
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLocationListList'
+          description: ''
+    post:
+      operationId: api_offices_offices_create_create
+      description: Mixin to track user actions
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Location'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Location'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
           description: ''
   /api/schema/:
     get:
@@ -272,9 +458,47 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
-  /api/staff/:
+  /api/staff/admin/{id}/:
     get:
-      operationId: api_staff_list
+      operationId: api_staff_admin_retrieve
+      description: Mixin to track user actions
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Admin'
+          description: ''
+  /api/staff/dashboard/:
+    get:
+      operationId: api_staff_dashboard_retrieve
+      description: An endpoint to get dashboard paramaters
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffList'
+          description: ''
+  /api/staff/staff/:
+    get:
+      operationId: api_staff_staff_list
       description: Mixin to track user actions
       parameters:
       - in: query
@@ -313,9 +537,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedStaffListList'
           description: ''
-  /api/staff/{id}/:
+  /api/staff/staff/{id}/:
     get:
-      operationId: api_staff_retrieve
+      operationId: api_staff_staff_retrieve
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -336,7 +560,7 @@ paths:
                 $ref: '#/components/schemas/Staff'
           description: ''
     put:
-      operationId: api_staff_update
+      operationId: api_staff_staff_update
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -369,7 +593,7 @@ paths:
                 $ref: '#/components/schemas/Staff'
           description: ''
     patch:
-      operationId: api_staff_partial_update
+      operationId: api_staff_staff_partial_update
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -400,9 +624,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Staff'
           description: ''
-  /api/staff/{id}/suspend:
+  /api/staff/staff/{id}/suspend:
     put:
-      operationId: api_staff_suspend_update
+      operationId: api_staff_staff_suspend_update
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -434,7 +658,7 @@ paths:
                 $ref: '#/components/schemas/SuspendStaff'
           description: ''
     patch:
-      operationId: api_staff_suspend_partial_update
+      operationId: api_staff_staff_suspend_partial_update
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -465,9 +689,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuspendStaff'
           description: ''
-  /api/staff/create:
+  /api/staff/staff/create:
     post:
-      operationId: api_staff_create_create
+      operationId: api_staff_staff_create_create
       description: Mixin to track user actions
       tags:
       - api
@@ -493,9 +717,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Staff'
           description: ''
-  /api/staff/export:
+  /api/staff/staff/export:
     get:
-      operationId: api_staff_export_retrieve
+      operationId: api_staff_staff_export_retrieve
       tags:
       - api
       security:
@@ -508,172 +732,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffList'
           description: ''
-  /offices/:
+  /api/tribe/:
     get:
-      operationId: offices_list
-      description: Mixin to track user actions
-      parameters:
-      - name: page
-        required: false
-        in: query
-        description: A page number within the paginated result set.
-        schema:
-          type: integer
-      tags:
-      - offices
-      security:
-      - jwtAuth: []
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedLocationListList'
-          description: ''
-  /offices/{id}/delete:
-    delete:
-      operationId: offices_delete_destroy
-      description: Mixin to track user actions
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        required: true
-      tags:
-      - offices
-      security:
-      - jwtAuth: []
-      - cookieAuth: []
-      responses:
-        '204':
-          description: No response body
-  /offices/{id}/update:
-    put:
-      operationId: offices_update_update
-      description: Mixin to track user actions
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        required: true
-      tags:
-      - offices
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Location'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Location'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Location'
-        required: true
-      security:
-      - jwtAuth: []
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Location'
-          description: ''
-    patch:
-      operationId: offices_update_partial_update
-      description: Mixin to track user actions
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        required: true
-      tags:
-      - offices
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedLocation'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedLocation'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedLocation'
-      security:
-      - jwtAuth: []
-      - cookieAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Location'
-          description: ''
-  /offices/create/:
-    post:
-      operationId: offices_create_create
-      description: Mixin to track user actions
-      tags:
-      - offices
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Location'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Location'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Location'
-        required: true
-      security:
-      - jwtAuth: []
-      - cookieAuth: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Location'
-          description: ''
-  /region/create/:
-    post:
-      operationId: region_create_create
-      description: Mixin to track user actions
-      tags:
-      - region
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Region'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Region'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Region'
-        required: true
-      security:
-      - jwtAuth: []
-      - cookieAuth: []
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Region'
-          description: ''
-  /tribe/:
-    get:
-      operationId: tribe_list
+      operationId: api_tribe_list
       description: Mixin to track user actions
       parameters:
       - name: page
@@ -689,7 +750,7 @@ paths:
         schema:
           type: string
       tags:
-      - tribe
+      - api
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -700,9 +761,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedTribeListList'
           description: ''
-  /tribe/{id}/:
+  /api/tribe/{id}/:
     get:
-      operationId: tribe_retrieve
+      operationId: api_tribe_retrieve
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -711,7 +772,7 @@ paths:
           type: integer
         required: true
       tags:
-      - tribe
+      - api
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -723,7 +784,7 @@ paths:
                 $ref: '#/components/schemas/TribeDetail'
           description: ''
     put:
-      operationId: tribe_update
+      operationId: api_tribe_update
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -732,7 +793,7 @@ paths:
           type: integer
         required: true
       tags:
-      - tribe
+      - api
       requestBody:
         content:
           application/json:
@@ -756,7 +817,7 @@ paths:
                 $ref: '#/components/schemas/Tribe'
           description: ''
     patch:
-      operationId: tribe_partial_update
+      operationId: api_tribe_partial_update
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -765,7 +826,7 @@ paths:
           type: integer
         required: true
       tags:
-      - tribe
+      - api
       requestBody:
         content:
           application/json:
@@ -787,9 +848,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Tribe'
           description: ''
-  /tribe/{tribe_pk}/squads:
+  /api/tribe/{tribe_pk}/squads:
     get:
-      operationId: tribe_squads_list
+      operationId: api_tribe_squads_list
       description: Mixin to track user actions
       parameters:
       - in: query
@@ -818,7 +879,7 @@ paths:
           type: integer
         required: true
       tags:
-      - tribe
+      - api
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -830,7 +891,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedSquadListList'
           description: ''
     post:
-      operationId: tribe_squads_create
+      operationId: api_tribe_squads_create
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -839,7 +900,7 @@ paths:
           type: integer
         required: true
       tags:
-      - tribe
+      - api
       requestBody:
         content:
           application/json:
@@ -862,9 +923,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Squad'
           description: ''
-  /tribe/{tribe_pk}/squads/{id}/:
+  /api/tribe/{tribe_pk}/squads/{id}/:
     get:
-      operationId: tribe_squads_retrieve
+      operationId: api_tribe_squads_retrieve
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -878,7 +939,7 @@ paths:
           type: integer
         required: true
       tags:
-      - tribe
+      - api
       security:
       - jwtAuth: []
       - cookieAuth: []
@@ -890,7 +951,7 @@ paths:
                 $ref: '#/components/schemas/Squad'
           description: ''
     put:
-      operationId: tribe_squads_update
+      operationId: api_tribe_squads_update
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -904,7 +965,7 @@ paths:
           type: integer
         required: true
       tags:
-      - tribe
+      - api
       requestBody:
         content:
           application/json:
@@ -928,7 +989,7 @@ paths:
                 $ref: '#/components/schemas/Squad'
           description: ''
     patch:
-      operationId: tribe_squads_partial_update
+      operationId: api_tribe_squads_partial_update
       description: Mixin to track user actions
       parameters:
       - in: path
@@ -942,7 +1003,7 @@ paths:
           type: integer
         required: true
       tags:
-      - tribe
+      - api
       requestBody:
         content:
           application/json:
@@ -964,9 +1025,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Squad'
           description: ''
-  /tribe/{tribe_pk}/squads/export:
+  /api/tribe/{tribe_pk}/squads/export:
     post:
-      operationId: tribe_squads_export_create
+      operationId: api_tribe_squads_export_create
       parameters:
       - in: path
         name: tribe_pk
@@ -974,7 +1035,7 @@ paths:
           type: integer
         required: true
       tags:
-      - tribe
+      - api
       requestBody:
         content:
           application/json:
@@ -997,12 +1058,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExportSquad'
           description: ''
-  /tribe/create:
+  /api/tribe/create:
     post:
-      operationId: tribe_create_create
+      operationId: api_tribe_create_create
       description: Mixin to track user actions
       tags:
-      - tribe
+      - api
       requestBody:
         content:
           application/json:
@@ -1074,9 +1135,6 @@ components:
         work_phone:
           type: string
           maxLength: 128
-        city:
-          type: string
-          maxLength: 100
         next_of_kin_first_name:
           type: string
           maxLength: 150
@@ -1087,8 +1145,6 @@ components:
           type: string
           nullable: true
           maxLength: 150
-        country:
-          $ref: '#/components/schemas/CountryEnum'
         next_of_kin_phone_number:
           type: string
           maxLength: 128
@@ -1105,10 +1161,14 @@ components:
         squad:
           type: integer
           nullable: true
+        city:
+          type: integer
+          nullable: true
+        country:
+          type: integer
+          nullable: true
       required:
       - alias_email
-      - city
-      - country
       - date_created
       - date_of_birth
       - date_updated
@@ -1124,18 +1184,32 @@ components:
       - role
       - unique_id
       - user
-    CountryEnum:
-      enum:
-      - Nigeria
-      - Uganda
-      - Kenya
-      - United States
-      type: string
-      description: |-
-        * `Nigeria` - Nigeria
-        * `Uganda` - Uganda
-        * `Kenya` - Kenya
-        * `United States` - United States
+    City:
+      type: object
+      properties:
+        country:
+          $ref: '#/components/schemas/Country'
+        name:
+          type: string
+          maxLength: 50
+      required:
+      - country
+      - name
+    CityList:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 50
+      required:
+      - name
+    Country:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/NameEnum'
+      required:
+      - name
     ExportSquad:
       type: object
       properties:
@@ -1180,17 +1254,20 @@ components:
         longitude:
           type: string
           maxLength: 20
-        region:
-          $ref: '#/components/schemas/Region'
+        country:
+          type: integer
+        city:
+          type: integer
         is_headquarter:
           type: boolean
         description:
           type: string
       required:
+      - city
+      - country
       - description
       - latitude
       - longitude
-      - region
     LocationList:
       type: object
       properties:
@@ -1227,6 +1304,58 @@ components:
         * `Married` - Married
         * `Single` - Single
         * `Widowed` - Widowed
+    NameEnum:
+      enum:
+      - Nigeria
+      - Uganda
+      - Kenya
+      - United States
+      type: string
+      description: |-
+        * `Nigeria` - Nigeria
+        * `Uganda` - Uganda
+        * `Kenya` - Kenya
+        * `United States` - United States
+    PaginatedCityListList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CityList'
+    PaginatedCountryList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Country'
     PaginatedLocationListList:
       type: object
       properties:
@@ -1316,8 +1445,10 @@ components:
         longitude:
           type: string
           maxLength: 20
-        region:
-          $ref: '#/components/schemas/Region'
+        country:
+          type: integer
+        city:
+          type: integer
         is_headquarter:
           type: boolean
         description:
@@ -1346,6 +1477,9 @@ components:
         email:
           type: string
           format: email
+        picture:
+          type: string
+          format: uri
         date_created:
           type: string
           format: date-time
@@ -1358,9 +1492,6 @@ components:
           type: string
           readOnly: true
           nullable: true
-        picture:
-          type: string
-          format: uri
         middle_name:
           type: string
           nullable: true
@@ -1385,9 +1516,6 @@ components:
         work_phone:
           type: string
           maxLength: 128
-        city:
-          type: string
-          maxLength: 100
         next_of_kin_first_name:
           type: string
           maxLength: 150
@@ -1398,8 +1526,6 @@ components:
           type: string
           nullable: true
           maxLength: 150
-        country:
-          $ref: '#/components/schemas/CountryEnum'
         next_of_kin_phone_number:
           type: string
           maxLength: 128
@@ -1426,6 +1552,12 @@ components:
         squad:
           type: integer
           nullable: true
+        city:
+          type: integer
+          nullable: true
+        country:
+          type: integer
+          nullable: true
     PatchedSuspendStaff:
       type: object
       properties:
@@ -1443,16 +1575,6 @@ components:
         tribe_lead:
           type: integer
           nullable: true
-    Region:
-      type: object
-      properties:
-        country:
-          $ref: '#/components/schemas/CountryEnum'
-        city:
-          type: integer
-          nullable: true
-      required:
-      - country
     Squad:
       type: object
       properties:
@@ -1505,6 +1627,9 @@ components:
         email:
           type: string
           format: email
+        picture:
+          type: string
+          format: uri
         date_created:
           type: string
           format: date-time
@@ -1517,9 +1642,6 @@ components:
           type: string
           readOnly: true
           nullable: true
-        picture:
-          type: string
-          format: uri
         middle_name:
           type: string
           nullable: true
@@ -1544,9 +1666,6 @@ components:
         work_phone:
           type: string
           maxLength: 128
-        city:
-          type: string
-          maxLength: 100
         next_of_kin_first_name:
           type: string
           maxLength: 150
@@ -1557,8 +1676,6 @@ components:
           type: string
           nullable: true
           maxLength: 150
-        country:
-          $ref: '#/components/schemas/CountryEnum'
         next_of_kin_phone_number:
           type: string
           maxLength: 128
@@ -1585,10 +1702,14 @@ components:
         squad:
           type: integer
           nullable: true
+        city:
+          type: integer
+          nullable: true
+        country:
+          type: integer
+          nullable: true
       required:
       - alias_email
-      - city
-      - country
       - date_created
       - date_of_birth
       - date_updated
