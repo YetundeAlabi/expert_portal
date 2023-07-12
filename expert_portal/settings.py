@@ -63,7 +63,7 @@ INSTALLED_APPS = [
     "accounts",
     "staff_mgt",
     "tribe",
-    "offices",
+    
 
 ]
 

@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  django_server:
+    build: .
+    # image: 7957bc38925a
+    restart: on-failure
+    command: bash -c "python manage.py collectstatic --no-input && gunicorn -b 0.0.0.0:8000 expert_portal.wsgi"
+    volumes:
+     - ./.env:/home/app/.env
+     - ./static/:/home/app/staticfiles
+     - ./media/:/home/app/media
+    ports:
+     - "8000:8000"
