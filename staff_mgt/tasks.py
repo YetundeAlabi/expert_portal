@@ -1,12 +1,12 @@
 
-from celery import app
+from expert_portal.celery import app
 
 
 from django.conf import settings
 from django.utils import timezone
 
 from staff_mgt.models import Staff
-# @app.task()
+@app.task()
 
 def suspend_staff():
     #check list of all staffs suspension date

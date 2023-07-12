@@ -2,12 +2,14 @@ from rest_framework.generics import RetrieveAPIView, GenericAPIView, UpdateAPIVi
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status,filters
+from django_filters.rest_framework import DjangoFilterBackend
 
-from staff_mgt.models import Tribe, Squad, Region, Location
+
+from staff_mgt.models import Tribe, Squad, City, Location, Country
 from base.mixins import ActivityLogMixin
 from tribe import serializers
-from .serializers import SquadSerializer, SquadListSerializer,TribeSerializer,TribeListSerializer, RegionSerializer, LocationSerializer, TribeDetailSerializer, ExportSquadSerializer, LocationListSerializer
+from .serializers import SquadSerializer, SquadListSerializer,TribeSerializer,TribeListSerializer, LocationSerializer, TribeDetailSerializer, CitySerializer, LocationListSerializer
 
 # from base.constants import FEMALE, MALE
 from base.utils import  export_data
@@ -33,7 +35,8 @@ class TribeCreateAPIView(ActivityLogMixin, GenericAPIView):
 
 class TribeListAPIView(ActivityLogMixin, ListAPIView):
     serializer_class = TribeListSerializer
-
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["name", "squad__name"]
     def get_queryset(self):
         return Tribe.objects.prefetch_related("squads")
     
@@ -78,8 +81,6 @@ class ExportTribeAPIView(GenericAPIView):
     def post(self, request, *args, **kwargs):
         model_name = self.get_serializer().Meta.model.__name__
         file_name = f'{model_name.lower()}.csv'
-        tribe_ids = request.data.get('tribe_ids', [])
-
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
@@ -98,17 +99,21 @@ class SquadDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
     
 class SquadListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
     queryset = Squad.objects.all()
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ["tribe", "name"]
+    search_fields = ["name", "tribe__name"]
+
     def get_queryset(self):
         tribe_pk = self.kwargs["tribe_pk"]
         if self.request.method == 'GET':
             return self.queryset.filter(tribe_id=tribe_pk)
-        return self.get_queryset()
-
+        return super().get_queryset()
+        # return self.get_queryset()
+    
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return SquadListSerializer
-        elif self.request.method == 'POST':
-            return SquadSerializer
+        return SquadSerializer
     
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -139,29 +144,50 @@ class ExportSquadAPIView(GenericAPIView):
         file = export_data(serializer=serializer, file_name=file_name)
 
         return file
-        
-
-class RegionCreateAPIView(ActivityLogMixin, CreateAPIView):
-    queryset = Region.objects.all()
-    serializer_class = RegionSerializer
 
 
-class LocationCreateAPIView(ActivityLogMixin, CreateAPIView):
+class CountryListAPIView(ActivityLogMixin, generics.ListAPIView):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
 
 
+class CityListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
+    queryset = City.objects.all()
+    
+    def get_queryset(self):
+        country_pk = self.kwargs["country_pk"]
+        return City.objects.filter(country_id=country_pk)
+    
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return serializers.CityListSerializer
+        return serializers.CitySerializer
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["country_id"] = self.kwargs["country_pk"]
+        context["request"] = self.request
+        return context
+
+
+class LocationListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
+
+    def get_queryset(self):
+        if self.request.method == "GET":
+            return self.queryset.active_objects.all()
+        return super().get_queryset()
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return LocationListSerializer
+        return LocationSerializer
+   
+         
 class LocationUpdateAPIView(ActivityLogMixin, UpdateAPIView):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
-
-
-class LocationListAPIView(ActivityLogMixin, ListAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationListSerializer
-
-    def get_queryset(self):
-        return self.queryset.active_objects.all()
 
 
 class LocationDestroyAPIView(ActivityLogMixin, generics.DestroyAPIView):
@@ -177,4 +203,4 @@ class LocationDestroyAPIView(ActivityLogMixin, generics.DestroyAPIView):
         instance.is_deleted = True
         instance.save(update_fields=["is_deleted"])
 
-    
+

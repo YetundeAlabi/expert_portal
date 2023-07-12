@@ -1,9 +1,8 @@
-
 from rest_framework.reverse import reverse
 from rest_framework import serializers
 
-from staff_mgt.models import Tribe, Squad, Region, Location, Staff
-from accounts.serializers import UserSerializer
+from staff_mgt.models import Tribe, Squad, Country, Location, Staff, City
+
 
 
 class SquadListSerializer(serializers.ModelSerializer):
@@ -73,7 +72,6 @@ class TribeDetailSerializer(serializers.ModelSerializer):
     num_squads = serializers.SerializerMethodField()
     overall_squad_members = serializers.SerializerMethodField() 
     staff_members = serializers.SerializerMethodField() 
-    # squads = SquadListSerializer()
 
     class Meta:
         model = Tribe
@@ -106,20 +104,39 @@ class SquadSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         tribe_id = self.context.get('tribe_id')
         return Squad.objects.create(**validated_data, tribe_id=tribe_id)
+
+
+class CountrySerializer(serializers.ModelSerializer):
+    # list country prefetched with cities
+    class Meta:
+        model = Country
+        fields = ["name"]
+
+
+class CitySerializer(serializers.ModelSerializer):
+    country = CountrySerializer()
+
+    class Meta:
+        model = City
+        fields = ["country", "name"]
+
+    def create(self, validated_data):
+        country_id = self.context.get('country_id')
+        return City.objects.create(**validated_data, country_id=country_id)
+
+
+class CityListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = City
+        fields = ["name"]
         
 
-class RegionSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Region
-        fields = ["country"]
-
-
 class LocationSerializer(serializers.ModelSerializer):
-
+    
     class Meta:
         model = Location
-        fields = ["country", "latitude", "longitude", "city", "is_headquarter", "description"]
+        fields = ["latitude", "longitude", "country", "city", "is_headquarter", "description"]
 
 
 class LocationListSerializer(serializers.ModelSerializer):
@@ -135,16 +152,15 @@ class LocationListSerializer(serializers.ModelSerializer):
         lookup_field = "pk",
         read_only =True
     )
-    
+
     detail_url = serializers.HyperlinkedIdentityField(
         view_name="location_detail",
         lookup_field = "pk",
         read_only =True
     )
 
-
     class Meta:
         model = Location
-        fields = ["country", "city", "is_headquarter", "description", "edit_url", "detail_url", "delete_url"]
+        fields = ["is_headquarter", "description", "edit_url", "detail_url", "delete_url"]
 
-   
+ 

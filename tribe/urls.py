@@ -12,4 +12,5 @@ urlpatterns = [
     path("<int:tribe_pk>/squads", views.SquadListCreateAPIView.as_view(), name="squad_list_create"),
     path("<int:tribe_pk>/squads/export", views.ExportSquadAPIView.as_view(), name="export_squad"),
     
+    
 ]

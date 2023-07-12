@@ -1,7 +1,9 @@
 from rest_framework.generics import RetrieveAPIView, GenericAPIView, UpdateAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, filters
+from django_filters.rest_framework import DjangoFilterBackend
+
 
 from .models import Staff, Tribe, Squad, Admin
 from base.mixins import ActivityLogMixin
@@ -55,6 +57,9 @@ class StaffCreateAPIView(ActivityLogMixin, GenericAPIView):
 class StaffListAPIView(ActivityLogMixin, ListAPIView):
     queryset = Staff.objects.all()
     serializer_class = StaffListSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ["tribe", "squad", "is_active"]
+    search_fields = ["first_name", "last_name"]
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -110,10 +115,12 @@ class SuspendStaffAPIView(ActivityLogMixin, UpdateAPIView):
         print(instance)
         if suspension_date:
             instance.suspension_date = suspension_date
-            suspend_staff.delay()
+            instance.save(update_fields=["suspension_date"])
+            # suspend_staff.delay()
         
         instance.is_active = not instance.is_active
-        
+        instance.save(update_fields=["is_active"])
+
         serializer = StaffSerializer(instance=instance)
         
 

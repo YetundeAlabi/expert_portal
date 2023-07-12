@@ -12,3 +12,6 @@ WIDOWED = "Widowed"
 CREATE, READ, UPDATE, DELETE = "Create", "Read", "Update", "Delete"
 LOGIN, LOGOUT, LOGIN_FAILED = "Login", "Logout", "Login Failed"
 SUCCESS, FAILED = "Success", "Failed"
+
+# afex countries
+NIGERIA, UGANDA, KENYA, UNITED_STATES = "Nigeria", "Uganda", "Kenya", "United States"

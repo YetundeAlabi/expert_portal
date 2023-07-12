@@ -42,9 +42,6 @@ paths:
             schema:
               $ref: '#/components/schemas/ForgetPassword'
         required: true
-      security:
-      - jwtAuth: []
-      - cookieAuth: []
       responses:
         '200':
           content:
@@ -107,9 +104,6 @@ paths:
             schema:
               $ref: '#/components/schemas/VerifyPin'
         required: true
-      security:
-      - jwtAuth: []
-      - cookieAuth: []
       responses:
         '200':
           content:
@@ -283,10 +277,28 @@ paths:
       operationId: api_staff_list
       description: Mixin to track user actions
       parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
       - name: page
         required: false
         in: query
         description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: squad
+        schema:
+          type: integer
+      - in: query
+        name: tribe
         schema:
           type: integer
       tags:
@@ -670,6 +682,12 @@ paths:
         description: A page number within the paginated result set.
         schema:
           type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
       tags:
       - tribe
       security:
@@ -774,10 +792,24 @@ paths:
       operationId: tribe_squads_list
       description: Mixin to track user actions
       parameters:
+      - in: query
+        name: name
+        schema:
+          type: string
       - name: page
         required: false
         in: query
         description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: tribe
         schema:
           type: integer
       - in: path
@@ -1094,506 +1126,16 @@ components:
       - user
     CountryEnum:
       enum:
-      - AD
-      - AE
-      - AF
-      - AG
-      - AI
-      - AL
-      - AM
-      - AO
-      - AQ
-      - AR
-      - AS
-      - AT
-      - AU
-      - AW
-      - AX
-      - AZ
-      - BA
-      - BB
-      - BD
-      - BE
-      - BF
-      - BG
-      - BH
-      - BI
-      - BJ
-      - BL
-      - BM
-      - BN
-      - BO
-      - BQ
-      - BR
-      - BS
-      - BT
-      - BV
-      - BW
-      - BY
-      - BZ
-      - CA
-      - CC
-      - CD
-      - CF
-      - CG
-      - CH
-      - CI
-      - CK
-      - CL
-      - CM
-      - CN
-      - CO
-      - CR
-      - CU
-      - CV
-      - CW
-      - CX
-      - CY
-      - CZ
-      - DE
-      - DJ
-      - DK
-      - DM
-      - DO
-      - DZ
-      - EC
-      - EE
-      - EG
-      - EH
-      - ER
-      - ES
-      - ET
-      - FI
-      - FJ
-      - FK
-      - FM
-      - FO
-      - FR
-      - GA
-      - GB
-      - GD
-      - GE
-      - GF
-      - GG
-      - GH
-      - GI
-      - GL
-      - GM
-      - GN
-      - GP
-      - GQ
-      - GR
-      - GS
-      - GT
-      - GU
-      - GW
-      - GY
-      - HK
-      - HM
-      - HN
-      - HR
-      - HT
-      - HU
-      - ID
-      - IE
-      - IL
-      - IM
-      - IN
-      - IO
-      - IQ
-      - IR
-      - IS
-      - IT
-      - JE
-      - JM
-      - JO
-      - JP
-      - KE
-      - KG
-      - KH
-      - KI
-      - KM
-      - KN
-      - KP
-      - KR
-      - KW
-      - KY
-      - KZ
-      - LA
-      - LB
-      - LC
-      - LI
-      - LK
-      - LR
-      - LS
-      - LT
-      - LU
-      - LV
-      - LY
-      - MA
-      - MC
-      - MD
-      - ME
-      - MF
-      - MG
-      - MH
-      - MK
-      - ML
-      - MM
-      - MN
-      - MO
-      - MP
-      - MQ
-      - MR
-      - MS
-      - MT
-      - MU
-      - MV
-      - MW
-      - MX
-      - MY
-      - MZ
-      - NA
-      - NC
-      - NE
-      - NF
-      - NG
-      - NI
-      - NL
-      - 'NO'
-      - NP
-      - NR
-      - NU
-      - NZ
-      - OM
-      - PA
-      - PE
-      - PF
-      - PG
-      - PH
-      - PK
-      - PL
-      - PM
-      - PN
-      - PR
-      - PS
-      - PT
-      - PW
-      - PY
-      - QA
-      - RE
-      - RO
-      - RS
-      - RU
-      - RW
-      - SA
-      - SB
-      - SC
-      - SD
-      - SE
-      - SG
-      - SH
-      - SI
-      - SJ
-      - SK
-      - SL
-      - SM
-      - SN
-      - SO
-      - SR
-      - SS
-      - ST
-      - SV
-      - SX
-      - SY
-      - SZ
-      - TC
-      - TD
-      - TF
-      - TG
-      - TH
-      - TJ
-      - TK
-      - TL
-      - TM
-      - TN
-      - TO
-      - TR
-      - TT
-      - TV
-      - TW
-      - TZ
-      - UA
-      - UG
-      - UM
-      - US
-      - UY
-      - UZ
-      - VA
-      - VC
-      - VE
-      - VG
-      - VI
-      - VN
-      - VU
-      - WF
-      - WS
-      - YE
-      - YT
-      - ZA
-      - ZM
-      - ZW
+      - Nigeria
+      - Uganda
+      - Kenya
+      - United States
       type: string
       description: |-
-        * `AD` - Andorra
-        * `AE` - United Arab Emirates
-        * `AF` - Afghanistan
-        * `AG` - Antigua & Barbuda
-        * `AI` - Anguilla
-        * `AL` - Albania
-        * `AM` - Armenia
-        * `AO` - Angola
-        * `AQ` - Antarctica
-        * `AR` - Argentina
-        * `AS` - Samoa (American)
-        * `AT` - Austria
-        * `AU` - Australia
-        * `AW` - Aruba
-        * `AX` - Åland Islands
-        * `AZ` - Azerbaijan
-        * `BA` - Bosnia & Herzegovina
-        * `BB` - Barbados
-        * `BD` - Bangladesh
-        * `BE` - Belgium
-        * `BF` - Burkina Faso
-        * `BG` - Bulgaria
-        * `BH` - Bahrain
-        * `BI` - Burundi
-        * `BJ` - Benin
-        * `BL` - St Barthelemy
-        * `BM` - Bermuda
-        * `BN` - Brunei
-        * `BO` - Bolivia
-        * `BQ` - Caribbean NL
-        * `BR` - Brazil
-        * `BS` - Bahamas
-        * `BT` - Bhutan
-        * `BV` - Bouvet Island
-        * `BW` - Botswana
-        * `BY` - Belarus
-        * `BZ` - Belize
-        * `CA` - Canada
-        * `CC` - Cocos (Keeling) Islands
-        * `CD` - Congo (Dem. Rep.)
-        * `CF` - Central African Rep.
-        * `CG` - Congo (Rep.)
-        * `CH` - Switzerland
-        * `CI` - Côte d'Ivoire
-        * `CK` - Cook Islands
-        * `CL` - Chile
-        * `CM` - Cameroon
-        * `CN` - China
-        * `CO` - Colombia
-        * `CR` - Costa Rica
-        * `CU` - Cuba
-        * `CV` - Cape Verde
-        * `CW` - Curaçao
-        * `CX` - Christmas Island
-        * `CY` - Cyprus
-        * `CZ` - Czech Republic
-        * `DE` - Germany
-        * `DJ` - Djibouti
-        * `DK` - Denmark
-        * `DM` - Dominica
-        * `DO` - Dominican Republic
-        * `DZ` - Algeria
-        * `EC` - Ecuador
-        * `EE` - Estonia
-        * `EG` - Egypt
-        * `EH` - Western Sahara
-        * `ER` - Eritrea
-        * `ES` - Spain
-        * `ET` - Ethiopia
-        * `FI` - Finland
-        * `FJ` - Fiji
-        * `FK` - Falkland Islands
-        * `FM` - Micronesia
-        * `FO` - Faroe Islands
-        * `FR` - France
-        * `GA` - Gabon
-        * `GB` - Britain (UK)
-        * `GD` - Grenada
-        * `GE` - Georgia
-        * `GF` - French Guiana
-        * `GG` - Guernsey
-        * `GH` - Ghana
-        * `GI` - Gibraltar
-        * `GL` - Greenland
-        * `GM` - Gambia
-        * `GN` - Guinea
-        * `GP` - Guadeloupe
-        * `GQ` - Equatorial Guinea
-        * `GR` - Greece
-        * `GS` - South Georgia & the South Sandwich Islands
-        * `GT` - Guatemala
-        * `GU` - Guam
-        * `GW` - Guinea-Bissau
-        * `GY` - Guyana
-        * `HK` - Hong Kong
-        * `HM` - Heard Island & McDonald Islands
-        * `HN` - Honduras
-        * `HR` - Croatia
-        * `HT` - Haiti
-        * `HU` - Hungary
-        * `ID` - Indonesia
-        * `IE` - Ireland
-        * `IL` - Israel
-        * `IM` - Isle of Man
-        * `IN` - India
-        * `IO` - British Indian Ocean Territory
-        * `IQ` - Iraq
-        * `IR` - Iran
-        * `IS` - Iceland
-        * `IT` - Italy
-        * `JE` - Jersey
-        * `JM` - Jamaica
-        * `JO` - Jordan
-        * `JP` - Japan
-        * `KE` - Kenya
-        * `KG` - Kyrgyzstan
-        * `KH` - Cambodia
-        * `KI` - Kiribati
-        * `KM` - Comoros
-        * `KN` - St Kitts & Nevis
-        * `KP` - Korea (North)
-        * `KR` - Korea (South)
-        * `KW` - Kuwait
-        * `KY` - Cayman Islands
-        * `KZ` - Kazakhstan
-        * `LA` - Laos
-        * `LB` - Lebanon
-        * `LC` - St Lucia
-        * `LI` - Liechtenstein
-        * `LK` - Sri Lanka
-        * `LR` - Liberia
-        * `LS` - Lesotho
-        * `LT` - Lithuania
-        * `LU` - Luxembourg
-        * `LV` - Latvia
-        * `LY` - Libya
-        * `MA` - Morocco
-        * `MC` - Monaco
-        * `MD` - Moldova
-        * `ME` - Montenegro
-        * `MF` - St Martin (French)
-        * `MG` - Madagascar
-        * `MH` - Marshall Islands
-        * `MK` - North Macedonia
-        * `ML` - Mali
-        * `MM` - Myanmar (Burma)
-        * `MN` - Mongolia
-        * `MO` - Macau
-        * `MP` - Northern Mariana Islands
-        * `MQ` - Martinique
-        * `MR` - Mauritania
-        * `MS` - Montserrat
-        * `MT` - Malta
-        * `MU` - Mauritius
-        * `MV` - Maldives
-        * `MW` - Malawi
-        * `MX` - Mexico
-        * `MY` - Malaysia
-        * `MZ` - Mozambique
-        * `NA` - Namibia
-        * `NC` - New Caledonia
-        * `NE` - Niger
-        * `NF` - Norfolk Island
-        * `NG` - Nigeria
-        * `NI` - Nicaragua
-        * `NL` - Netherlands
-        * `NO` - Norway
-        * `NP` - Nepal
-        * `NR` - Nauru
-        * `NU` - Niue
-        * `NZ` - New Zealand
-        * `OM` - Oman
-        * `PA` - Panama
-        * `PE` - Peru
-        * `PF` - French Polynesia
-        * `PG` - Papua New Guinea
-        * `PH` - Philippines
-        * `PK` - Pakistan
-        * `PL` - Poland
-        * `PM` - St Pierre & Miquelon
-        * `PN` - Pitcairn
-        * `PR` - Puerto Rico
-        * `PS` - Palestine
-        * `PT` - Portugal
-        * `PW` - Palau
-        * `PY` - Paraguay
-        * `QA` - Qatar
-        * `RE` - Réunion
-        * `RO` - Romania
-        * `RS` - Serbia
-        * `RU` - Russia
-        * `RW` - Rwanda
-        * `SA` - Saudi Arabia
-        * `SB` - Solomon Islands
-        * `SC` - Seychelles
-        * `SD` - Sudan
-        * `SE` - Sweden
-        * `SG` - Singapore
-        * `SH` - St Helena
-        * `SI` - Slovenia
-        * `SJ` - Svalbard & Jan Mayen
-        * `SK` - Slovakia
-        * `SL` - Sierra Leone
-        * `SM` - San Marino
-        * `SN` - Senegal
-        * `SO` - Somalia
-        * `SR` - Suriname
-        * `SS` - South Sudan
-        * `ST` - Sao Tome & Principe
-        * `SV` - El Salvador
-        * `SX` - St Maarten (Dutch)
-        * `SY` - Syria
-        * `SZ` - Eswatini (Swaziland)
-        * `TC` - Turks & Caicos Is
-        * `TD` - Chad
-        * `TF` - French S. Terr.
-        * `TG` - Togo
-        * `TH` - Thailand
-        * `TJ` - Tajikistan
-        * `TK` - Tokelau
-        * `TL` - East Timor
-        * `TM` - Turkmenistan
-        * `TN` - Tunisia
-        * `TO` - Tonga
-        * `TR` - Turkey
-        * `TT` - Trinidad & Tobago
-        * `TV` - Tuvalu
-        * `TW` - Taiwan
-        * `TZ` - Tanzania
-        * `UA` - Ukraine
-        * `UG` - Uganda
-        * `UM` - US minor outlying islands
-        * `US` - United States
-        * `UY` - Uruguay
-        * `UZ` - Uzbekistan
-        * `VA` - Vatican City
-        * `VC` - St Vincent
-        * `VE` - Venezuela
-        * `VG` - Virgin Islands (UK)
-        * `VI` - Virgin Islands (US)
-        * `VN` - Vietnam
-        * `VU` - Vanuatu
-        * `WF` - Wallis & Futuna
-        * `WS` - Samoa (western)
-        * `YE` - Yemen
-        * `YT` - Mayotte
-        * `ZA` - South Africa
-        * `ZM` - Zambia
-        * `ZW` - Zimbabwe
+        * `Nigeria` - Nigeria
+        * `Uganda` - Uganda
+        * `Kenya` - Kenya
+        * `United States` - United States
     ExportSquad:
       type: object
       properties:
@@ -1632,35 +1174,26 @@ components:
     Location:
       type: object
       properties:
-        country:
-          type: integer
         latitude:
           type: string
           maxLength: 20
         longitude:
           type: string
           maxLength: 20
-        city:
-          type: string
-          maxLength: 50
+        region:
+          $ref: '#/components/schemas/Region'
         is_headquarter:
           type: boolean
         description:
           type: string
       required:
-      - city
-      - country
       - description
       - latitude
       - longitude
+      - region
     LocationList:
       type: object
       properties:
-        country:
-          type: integer
-        city:
-          type: string
-          maxLength: 50
         is_headquarter:
           type: boolean
         description:
@@ -1678,8 +1211,6 @@ components:
           format: uri
           readOnly: true
       required:
-      - city
-      - country
       - delete_url
       - description
       - detail_url
@@ -1779,17 +1310,14 @@ components:
     PatchedLocation:
       type: object
       properties:
-        country:
-          type: integer
         latitude:
           type: string
           maxLength: 20
         longitude:
           type: string
           maxLength: 20
-        city:
-          type: string
-          maxLength: 50
+        region:
+          $ref: '#/components/schemas/Region'
         is_headquarter:
           type: boolean
         description:
@@ -1920,6 +1448,9 @@ components:
       properties:
         country:
           $ref: '#/components/schemas/CountryEnum'
+        city:
+          type: integer
+          nullable: true
       required:
       - country
     Squad:

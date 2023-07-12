@@ -18,8 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from tribe.views import RegionCreateAPIView, LocationCreateAPIView, LocationDestroyAPIView, LocationUpdateAPIView, LocationListAPIView
+from tribe.views import CountryListCreateAPIView, CityListCreateAPIView, LocationListCreateAPIView, LocationDestroyAPIView, LocationUpdateAPIView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -28,9 +29,9 @@ urlpatterns = [
     path("tribe/", include("tribe.urls", namespace="tribe")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("", SpectacularSwaggerView.as_view(url_name="schema")),
-    path("region/create/", RegionCreateAPIView.as_view(), name="create_region"),
-    path("offices/create/", LocationCreateAPIView.as_view(), name="create_region"),
-    path("offices/", LocationListAPIView.as_view(), name="list_offices"),
+    path("office/countries/", ),
+    # path("region/create/", RegionCreateAPIView.as_view(), name="create_region"),
+    path("offices/create/", LocationListCreateAPIView.as_view(), name="list_create_location"),
     path("offices/<int:pk>/update", LocationUpdateAPIView.as_view(), name="location_update"),
     path("offices/<int:pk>/delete", LocationDestroyAPIView.as_view(), name="delete_location"),
 
