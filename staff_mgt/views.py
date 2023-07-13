@@ -58,7 +58,7 @@ class StaffListAPIView(ListAPIView):
     queryset = Staff.objects.all()
     serializer_class = StaffListSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ["tribe", "squad", "is_active"]
+    filterset_fields = ["tribe__name", "squad__name", "is_active"]
     search_fields = ["first_name", "last_name"]
 
     def list(self, request, *args, **kwargs):
