@@ -112,6 +112,7 @@ class RegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Region
         fields = ["id", "name"]
+        read_only_fields = ["id"]
 
 
 class OfficeCityAddressSerializer(serializers.ModelSerializer):
@@ -123,14 +124,12 @@ class OfficeCityAddressSerializer(serializers.ModelSerializer):
   
 
 class OfficeAddressSerializer(serializers.ModelSerializer):
-    region = RegionSerializer()
     
     class Meta:
         model = OfficeAddress
-        fields = ["latitude", "longitude", "region", "city", "is_headquarter", "description"]
+        fields = ["latitude", "longitude","city", "is_headquarter", "description"]
 
     def create(self, validated_data):
-        region = validated_data.pop("region")
         region_id = self.context.get('region_id')
         return OfficeAddress.objects.create(**validated_data, region_id=region_id)
 

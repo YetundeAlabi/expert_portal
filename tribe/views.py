@@ -148,7 +148,7 @@ class CountryListAPIView(ListAPIView):
 
 class OfficeAddressCreateAPIView(ActivityLogMixin, CreateAPIView):
     queryset = OfficeAddress.objects.all()
-    serilizer_class = OfficeAddressSerializer
+    serializer_class = OfficeAddressSerializer
     
     def get_queryset(self):
         region_pk = self.kwargs["region_pk"]
