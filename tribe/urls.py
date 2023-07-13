@@ -12,7 +12,7 @@ urlpatterns = [
     path("tribes/<int:tribe_pk>/squads/export", views.ExportSquadAPIView.as_view(), name="export_squad"),
     path("regions/", views.CountryListAPIView.as_view(), name="countries"),
     path("address/", views.OfficeAddressListAPIView.as_view(), name="address_list"),
-    path("address/<int:region_pk>/city-address", views.OfficeAddressListCreateAPIView.as_view(), name="office_address"),
-    path("address/<int:pk>/update", views.OfficeAddressUpdateAPIView.as_view(), name="location_update"),
-    path("address/<int:pk>/delete", views.OfficeAddressDestroyAPIView.as_view(), name="delete_location"),
+    path("address/<int:region_pk>/city-address", views.OfficeAddressListCreateAPIView.as_view(), name="office_address_list_detail"),
+    path("address/<int:pk>/update", views.OfficeAddressUpdateAPIView.as_view(), name="update_office_address"),
+    path("address/<int:pk>/delete", views.OfficeAddressDestroyAPIView.as_view(), name="delete_office_address"),
 ]

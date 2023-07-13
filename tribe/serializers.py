@@ -134,27 +134,23 @@ class OfficeAddressSerializer(serializers.ModelSerializer):
 
 
 class OfficeAddressListSerializer(serializers.ModelSerializer):
-    # edit_url
+    """ Serializer for listing office address"""
     delete_url = serializers.HyperlinkedIdentityField(
-        view_name="delete_office_address",
+        view_name="tribe:delete_office_address",
         lookup_field = "pk",
         read_only =True
     )
 
-    edit_url = serializers.HyperlinkedIdentityField(
-        view_name="update_office_address",
-        lookup_field = "pk",
-        read_only =True
-    )
-
-    detail_url = serializers.HyperlinkedIdentityField(
-        view_name="OfficeAddress_detail",
-        lookup_field = "pk",
-        read_only =True
-    )
-
+    edit_url = serializers.SerializerMethodField()
+    
     class Meta:
         model = OfficeAddress
-        fields = ["is_headquarter", "description", "edit_url", "detail_url", "delete_url"]
+        fields = ["is_headquarter", "id", "description", "city", "edit_url", "delete_url"]
 
- 
+    def get_edit_url(self, obj):
+        request = self.context.get('request')
+        if request is None:
+            return None
+        return reverse("tribe:update_office_address", kwargs={"pk": obj.pk}, request=request)
+
+    

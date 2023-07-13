@@ -51,15 +51,6 @@ class TribeListAPIView(ActivityLogMixin, ListAPIView):
         return Response({'message': 'Tribe list pulled successfully', 'data': data, 'tribe_count': tribe_count}, status=status.HTTP_200_OK) 
 
 
-# class TribeDetailAPIView(RetrieveAPIView):
-#     queryset = Tribe.objects.all()
-#     serializer_class = TribeDetailSerializer
-
-
-# class TribeUpdateAPIView(UpdateAPIView):
-#     queryset = Tribe.objects.all()
-#     serializer_class = TribeSerializer
-
 class TribeDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
     queryset = Tribe.objects.all()
     lookup_field = 'pk'
@@ -149,6 +140,7 @@ class CountryListAPIView(ListAPIView):
 class OfficeAddressListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
     queryset = OfficeAddress.objects.all()
     serializer_class = OfficeAddressSerializer
+    lookup_field = 'pk'
     
     def get_queryset(self):
         region_pk = self.kwargs["region_pk"]
@@ -163,22 +155,33 @@ class OfficeAddressListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIVie
 
 # list all office address
 class OfficeAddressListAPIView(ActivityLogMixin, ListAPIView): 
+    """
+    Endpoint to list all offices address
+    """
     serializer_class = OfficeAddressListSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ["city", "region__name"]
 
     def get_queryset(self):
-        return OfficeAddress.active_objects.all()
+        return OfficeAddress.active_objects.order_by("id").all()
 
          
 class OfficeAddressUpdateAPIView(ActivityLogMixin, UpdateAPIView):
     queryset = OfficeAddress.objects.all()
     serializer_class = OfficeAddressSerializer
+    lookup_field = 'pk'
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
+
 
 
 class OfficeAddressDestroyAPIView(ActivityLogMixin, DestroyAPIView):
     queryset = OfficeAddress.objects.all()
     serializer_class = OfficeAddressSerializer
+    lookup_field = 'pk'
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
