@@ -13,7 +13,7 @@ from base.constants import FEMALE, MALE
 from base.utils import export_data
 
 
-class DashboardAPIView(ActivityLogMixin, GenericAPIView):
+class DashboardAPIView(GenericAPIView):
     """ 
     An endpoint to get dashboard paramaters 
     """
@@ -54,7 +54,7 @@ class StaffCreateAPIView(ActivityLogMixin, GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class StaffListAPIView(ActivityLogMixin, ListAPIView):
+class StaffListAPIView(ListAPIView):
     queryset = Staff.objects.all()
     serializer_class = StaffListSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
