@@ -141,9 +141,9 @@ class ExportSquadAPIView(GenericAPIView):
 
 # Create your views here.
 
-# class CountryListAPIView( ListAPIView):
-#     queryset = Region.objects.all()
-#     serializer_class = CountrySerializer
+class CountryListAPIView( ListAPIView):
+    queryset = Region.objects.all()
+    serializer_class = RegionSerializer
 
 
 class OfficeAddressCreateAPIView(ActivityLogMixin, CreateAPIView):
