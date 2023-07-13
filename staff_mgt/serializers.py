@@ -7,6 +7,7 @@ from rest_framework.reverse import reverse
 from base import validators
 from staff_mgt.models import Staff, Admin
 from accounts.serializers import UserSerializer
+from tribe.serializers import TribeSerializer
 
 # today = timezone.now().date()
 
@@ -25,6 +26,9 @@ class StaffSerializer(serializers.ModelSerializer):
 class StaffListSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField(read_only=True)
+    tribe = serializers.CharField(source="tribe.name")
+    squad = serializers.CharField(source="squad.name")
+
     
     class Meta:
         model = Staff
@@ -56,11 +60,8 @@ class SuspendStaffSerializer(serializers.Serializer):
     def validate_suspension_date(self, value):
          # Convert datetime.date to string
         value_str = value.strftime('%Y-%m-%d')
-        # Check if the value is in the expected format 'YYYY-MM-DD'
         try:
             datetime.strptime(value_str, '%Y-%m-%d')
-            # if value <= datetime.now().date():
-            #     raise serializers.ValidationError('suspension date cannot be later than today')
         except ValueError:
             raise serializers.ValidationError("Invalid date format. It must be in YYYY-MM-DD format.")
         
