@@ -23,7 +23,7 @@ GENDER_CHOICES = [
         (MALE, MALE)
 ]
 
-MARTIAL_STATUS_CHOICES = [
+MARITAL_STATUS_CHOICES = [
     (DIVORCED, DIVORCED),
     (MARRIED, MARRIED),
     (SINGLE, SINGLE),
@@ -87,7 +87,7 @@ class StaffBaseModel(BaseModel):
     middle_name = models.CharField(max_length=150, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
-    martial_status = models.CharField(max_length=20, choices=MARTIAL_STATUS_CHOICES)
+    marital_status = models.CharField(max_length=20, choices=MARITAL_STATUS_CHOICES)
     alias_email = models.EmailField(max_length=255)
     tribe = models.ForeignKey('Tribe', on_delete=models.SET_NULL, null=True, blank=True) #to avoid circular import error
     squad = models.ForeignKey('Squad', on_delete=models.SET_NULL, null=True, blank=True)
