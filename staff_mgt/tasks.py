@@ -15,4 +15,4 @@ def suspend_staff():
     staff_to_suspend = Staff.objects.filter(suspension_date=today
                                             ).update(is_active=False, suspension_date=None)
     
-    return staff_to_suspend
+    return "Done suspending staff"
