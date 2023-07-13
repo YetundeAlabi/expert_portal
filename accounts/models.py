@@ -17,7 +17,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=True) #sign up required for only admin 
     first_name = models.CharField(max_length=150, blank=True)
     last_name = models.CharField(max_length=150, blank=True)
-    verification_code = models.CharField(max_length=6, blank=True, null=True)
+    verification_code = models.CharField(max_length=7, blank=True, null=True)
 
     objects = UserManager()
 

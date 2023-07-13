@@ -30,9 +30,8 @@ MARTIAL_STATUS_CHOICES = [
     (WIDOWED, WIDOWED),
 ]
 
-
 COUNTRY_CHOICES = [
-    (code, country) for code, country in country_names.items()
+    (country, country) for code, country in country_names.items()
 ]
 
 class Region(models.Model):
@@ -86,7 +85,7 @@ class StaffBaseModel(BaseModel):
     unique_id = models.CharField(max_length=8, null=True, blank=True, editable=False)
     picture = models.ImageField(upload_to="media/", )
     middle_name = models.CharField(max_length=150, blank=True, null=True)
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(blank=True, null=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
     martial_status = models.CharField(max_length=20, choices=MARTIAL_STATUS_CHOICES)
     alias_email = models.EmailField(max_length=255)
@@ -161,11 +160,3 @@ def generate_unique_identifier(sender, instance, **kwargs):
         unique_id = f"{random_alphabet}{random_digits}"
         instance.unique_id = unique_id
 
-
-
-# COUNTRY_CHOICES = [
-#     (NIGERIA, NIGERIA),
-#     (UGANDA, UGANDA),
-#     (KENYA, KENYA),
-#     (UNITED_STATES, UNITED_STATES),
-# ]

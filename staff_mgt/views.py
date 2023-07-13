@@ -81,17 +81,19 @@ class StaffRetrieveUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
     lookup_field = "pk"
 
 
-class ExportStaffAPIView(GenericAPIView):
+class ExportStaffAPIView(ActivityLogMixin, GenericAPIView):
+    """
+    Endpoint to get selected staff as a csv. expects ids of the selected staff
+    """
     queryset = Staff.objects.all()
     serializer_class = StaffListSerializer
 
     def get(self, request, *args, **kwargs):
         model_name = self.get_serializer().Meta.model.__name__
-        file_name = f'{model_name.lower()}.csv'
+        file_name = f'{model_name.lower()}.csv' 
         staff_ids = request.data.get('staff_ids', [])
 
         queryset = self.get_queryset.filter(id__in=staff_ids)
-        # queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
         file = export_data(serializer=serializer, file_name=file_name)
@@ -121,7 +123,5 @@ class SuspendStaffAPIView(ActivityLogMixin, GenericAPIView):
             instance.save(update_fields=["suspension_date"])
             
         serializer = StaffSerializer(instance=instance)
-        test = ~instance.is_active
-
-        return Response({"data":serializer.data, "test": test,}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
         

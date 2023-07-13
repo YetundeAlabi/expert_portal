@@ -8,5 +8,6 @@ urlpatterns = [
     path("login/", views.LoginAPIView.as_view(), name="login"),
     path("logout/", views.LogoutView.as_view(), name="logout"),
     path("forget-password/", views.ForgetPasswordView.as_view(), name="forget_password"),
-    path("verify-pin/", views.VerifyPinView.as_view(), name="verify_pin")
+    path("verify-pin/", views.VerifyPinView.as_view(), name="verify_pin"),
+    path("reset-password/", views.ResetPasswordView.as_view(), name="reset-password")
 ]

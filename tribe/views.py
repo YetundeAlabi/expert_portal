@@ -102,11 +102,8 @@ class SquadListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
 
     def get_queryset(self):
         tribe_pk = self.kwargs["tribe_pk"]
-        if self.request.method == 'GET':
-            return self.queryset.filter(tribe_id=tribe_pk)
-        return super().get_queryset()
-        # return self.get_queryset()
-    
+        return self.get_queryset().filter(tribe_id=tribe_pk)
+        
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return SquadListSerializer

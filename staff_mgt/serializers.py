@@ -13,10 +13,9 @@ from accounts.serializers import UserSerializer
 class StaffSerializer(serializers.ModelSerializer):
     """Seriaizer for creating and updating staff"""
     email = serializers.EmailField(validators=[validators.validate_email_domain])
+    alias_email = serializers.EmailField(validators=[validators.validate_email_domain])
     picture = serializers.ImageField(validators=[validators.validate_image_extension])
-    # is_active = serializers.BooleanField(read_only=True)
-    # suspension_date = serializers.DateField(read_only=True)
-
+   
     class Meta:
         model = Staff
         read_only_fields = ["id", "unique_id", "is_active", "suspension_date"]
@@ -53,11 +52,6 @@ class AdminSerializer(serializers.ModelSerializer):
 
 class SuspendStaffSerializer(serializers.Serializer):
     suspension_date = serializers.DateField(required=False)
-
-    # def valid_suspension_date(self, value):
-    #     if value <= timezone.now().date():
-    #         raise serializers.ValidationError('suspension date cannot be later than today')
-    #     return value
 
     def validate_suspension_date(self, value):
          # Convert datetime.date to string

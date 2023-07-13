@@ -33,7 +33,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
     
 class ForgetPasswordSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(validators=[validators.validate_email_domain])
 
 
 class VerifyPinSerializer(serializers.ModelSerializer):
@@ -52,9 +52,9 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["new_password", "confirm_password"]
+        fields = ["email", "new_password", "confirm_password"]
 
     def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
+        if attrs['new_password'] != attrs['confirm_password']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
         return attrs
