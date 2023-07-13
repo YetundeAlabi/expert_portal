@@ -146,7 +146,7 @@ class CountryListAPIView(ListAPIView):
     serializer_class = RegionSerializer
 
 
-class OfficeAddressCreateAPIView(ActivityLogMixin, CreateAPIView):
+class OfficeAddressListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
     queryset = OfficeAddress.objects.all()
     serializer_class = OfficeAddressSerializer
     
@@ -161,7 +161,8 @@ class OfficeAddressCreateAPIView(ActivityLogMixin, CreateAPIView):
         return context
 
 
-class OfficeAddressListAPIView(ActivityLogMixin, ListAPIView):
+# list all office address
+class OfficeAddressListAPIView(ActivityLogMixin, ListAPIView): 
     serializer_class = OfficeAddressListSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ["city", "region__name"]
