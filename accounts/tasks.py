@@ -5,7 +5,7 @@ from django.conf import settings
 
 from expert_portal.celery import app
 
-@app.task()
+# @app.task()
 def send_email(data):
     try:
         email = EmailMessage(
