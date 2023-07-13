@@ -18,3 +18,4 @@ def send_email(data):
     except smtplib.SMTPException as e:
         print(f"An error occured: {e}")
     
+    print("done")

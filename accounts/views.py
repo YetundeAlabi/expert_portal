@@ -59,10 +59,6 @@ class ForgetPasswordView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data.get('email')
-            print(email)
-            all_user = User.objects.all()
-            print(all_user)
-        
             user = User.objects.filter(email=email).get()
             if not user:
                 return Response({"error": "Invalid email address. Enter a correct email address"}, status=status.HTTP_400_BAD_REQUEST)
