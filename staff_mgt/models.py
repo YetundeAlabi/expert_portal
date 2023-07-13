@@ -156,7 +156,7 @@ class Admin(StaffBaseModel):
 def generate_unique_identifier(sender, instance, **kwargs):
     if not instance.unique_id:
         random_digits = get_random_string(length=7, allowed_chars="0123456789")
-        random_alphabet = get_random_string(length=1, allowed_chars="ABCDEF")
+        random_alphabet = get_random_string(length=1, allowed_chars="ABCDEFGHIJ")
         unique_id = f"{random_alphabet}{random_digits}"
         instance.unique_id = unique_id
 

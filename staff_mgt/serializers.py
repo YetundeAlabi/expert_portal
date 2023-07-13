@@ -1,13 +1,12 @@
 from datetime import datetime
 
-from django.utils import timezone
-
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+
+
 from base import validators
 from staff_mgt.models import Staff, Admin
 from accounts.serializers import UserSerializer
-from tribe.serializers import TribeSerializer
 
 # today = timezone.now().date()
 
@@ -29,7 +28,6 @@ class StaffListSerializer(serializers.ModelSerializer):
     tribe = serializers.CharField(source="tribe.name")
     squad = serializers.CharField(source="squad.name")
 
-    
     class Meta:
         model = Staff
         fields = ["name", "email", "phone_number", "tribe", "squad", "status",
