@@ -8,3 +8,5 @@ __pycache__/*
 *.pyc
 __pycache__/
 # accounts/media/
+Dockerfile
+docker-compose.yml

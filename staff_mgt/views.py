@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework.generics import RetrieveAPIView, GenericAPIView, UpdateAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status, filters
@@ -5,7 +7,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 
 from staff_mgt.models import Staff, Admin, Tribe, Squad
-
 from base.mixins import ActivityLogMixin
 from .serializers import StaffSerializer, StaffListSerializer, AdminSerializer, SuspendStaffSerializer
 from base.constants import FEMALE, MALE
@@ -109,19 +110,18 @@ class SuspendStaffAPIView(ActivityLogMixin, GenericAPIView):
     def patch(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        suspension_date = serializer.validated_data
+        suspension_date = serializer.validated_data.get("suspension_date")
         instance = self.get_object()
-        print(instance)
-        if suspension_date:
-            instance.suspension_date = suspension_date
+        if suspension_date is None:
+            instance.is_active = not instance.is_active
+            instance.save(update_fields=["is_active"])
+        else:
+            suspension_date_str = datetime.strptime(suspension_date, '%Y-%m-%d').date() #convert suspension_date to a string
+            instance.suspension_date = suspension_date_str
             instance.save(update_fields=["suspension_date"])
-            # suspend_staff.delay()
-        
-        instance.is_active = not instance.is_active
-        instance.save(update_fields=["is_active"])
-
+            
         serializer = StaffSerializer(instance=instance)
-        
+        test = ~instance.is_active
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"data":serializer.data, "test": test,}, status=status.HTTP_200_OK)
         

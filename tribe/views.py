@@ -32,7 +32,7 @@ class TribeCreateAPIView(ActivityLogMixin, GenericAPIView):
 class TribeListAPIView(ActivityLogMixin, ListAPIView):
     serializer_class = TribeListSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ["name", "squad__name"]
+    search_fields = ["name", "squads__name"]
 
     def get_queryset(self):
         return Tribe.objects.prefetch_related("squads")

@@ -38,6 +38,7 @@ ALLOWED_HOSTS = ["*"]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://expertportal-production.up.railway.app'
+    
 ]
 # Application definition
 

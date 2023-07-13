@@ -1,12 +1,9 @@
 import smtplib
 
-from django.http import HttpResponse
-
 from django.core.mail import EmailMessage
 from django.conf import settings
-from django.utils import timezone
 
-from staff_mgt.models import Staff
+from expert_portal.celery import app
 
 # @app.task()
 def send_email(data):
