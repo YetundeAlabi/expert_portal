@@ -127,7 +127,7 @@ class OfficeAddressSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = OfficeAddress
-        fields = ["latitude", "longitude","city", "is_headquarter", "description"]
+        fields = ["id", "latitude", "longitude","city", "is_headquarter", "description"]
 
     def create(self, validated_data):
         region_id = self.context.get('region_id')
