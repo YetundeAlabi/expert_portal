@@ -10,7 +10,7 @@ class SquadListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Squad
-        fields= ["name", "squad_lead", "members", "date_created", "url"]
+        fields= ["id","name", "squad_lead", "members", "date_created", "url"]
 
     def get_members(self, obj):
         return obj.staff_set.count()
@@ -43,6 +43,7 @@ class TribeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tribe
         fields = ["name", "description", "tribe_lead"]
+        read_only_fields = ["id"]
 
     def validate_tribe_lead(self, value):
         """ check that squad lead exists in the tribe"""
@@ -58,7 +59,7 @@ class TribeListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tribe
-        fields = ["name", "tribe_lead", "date_created", "url", "squads"]
+        fields = ["id", "name", "tribe_lead", "date_created", "url", "squads"]
 
     def get_url(self, obj):
         request = self.context.get('request')
@@ -74,7 +75,7 @@ class TribeDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tribe
-        fields = ["name", "description", "tribe_lead", "num_squads", "overall_squad_members", "staff_members"]
+        fields = ["id", "name", "description", "tribe_lead", "num_squads", "overall_squad_members", "staff_members"]
 
     def get_num_squads(self, obj):
         return obj.get_staff_count()
@@ -103,8 +104,6 @@ class SquadSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         tribe_id = self.context.get('tribe_id')
         return Squad.objects.create(**validated_data, tribe_id=tribe_id)
-
-
 
 
 class RegionSerializer(serializers.ModelSerializer):
