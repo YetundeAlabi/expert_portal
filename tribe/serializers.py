@@ -111,7 +111,7 @@ class RegionSerializer(serializers.ModelSerializer):
     # list country prefetched with cities
     class Meta:
         model = Region
-        fields = ["name"]
+        fields = ["id", "name"]
 
 
 class OfficeCityAddressSerializer(serializers.ModelSerializer):
