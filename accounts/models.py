@@ -6,6 +6,15 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from base.managers import UserManager
 from base.constants import CREATED, UPDATED, DELETED, UNREAD, READ
 
+ACTION_TYPES = [
+    (CREATED, CREATED),
+    (UPDATED, UPDATED),
+    (DELETED, DELETED),  
+]
+
+ACTION_STATUS = [(UNREAD, UNREAD), (READ, READ)]
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model """
     email = models.EmailField(
@@ -37,23 +46,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         ]
 
 
-ACTION_TYPES = [
-    (CREATED, CREATED),
-    (UPDATED, UPDATED),
-    (DELETED, DELETED),  
-]
-
-ACTION_STATUS = [(UNREAD, UNREAD), (READ, READ)]
-
 class ActivityLog(models.Model):
     actor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     action_type = models.CharField(choices=ACTION_TYPES, max_length=15)
     action_time = models.DateTimeField(auto_now_add=True)
     remarks = models.TextField(blank=True, null=True)
     status = models.CharField(choices=ACTION_STATUS, max_length=7)
-    content_type = models.ForeignKey(
-        ContentType, models.SET_NULL, blank=True, null=True
-    )
+    content_type = models.ForeignKey(ContentType, models.SET_NULL, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey()
 

@@ -92,7 +92,7 @@ class SquadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Squad
-        fields = ["id","name", "description", "squad_lead"]
+        fields = ["id", "name", "description", "squad_lead"]
         read_only_field = ["id"]
 
     def validate_squad_lead(self, value):
@@ -107,7 +107,7 @@ class SquadSerializer(serializers.ModelSerializer):
 
 
 class RegionSerializer(serializers.ModelSerializer):
-    # list country prefetched with cities
+
     class Meta:
         model = Region
         fields = ["id", "name"]
@@ -140,7 +140,6 @@ class OfficeAddressListSerializer(serializers.ModelSerializer):
         lookup_field = "pk",
         read_only =True
     )
-
     edit_url = serializers.SerializerMethodField()
     
     class Meta:

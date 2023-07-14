@@ -2,16 +2,16 @@ from datetime import datetime
 
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from rest_framework.validators import UniqueValidator
 
 from staff_mgt.validators import validate_email_domain, unique_email, validate_image_extension
 from staff_mgt.models import Staff, Admin
 from accounts.serializers import UserSerializer
 
 
-
 class StaffSerializer(serializers.ModelSerializer):
-    """Seriaizer for creating and updating staff"""
+    """
+    Serializer for creating and updating staff
+    """
     email = serializers.EmailField(validators=[validate_email_domain, unique_email])
     alias_email = serializers.EmailField(validators=[validate_email_domain, unique_email])
     picture = serializers.ImageField(validators=[validate_image_extension])
@@ -56,16 +56,16 @@ class SuspendStaffSerializer(serializers.Serializer):
     suspension_date = serializers.DateField(required=False)
 
     def validate_suspension_date(self, value):
-         # Convert datetime.date to string
-        value_str = value.strftime('%Y-%m-%d')
+        value_str = value.strftime('%Y-%m-%d')# Convert datetime.date to string
         try:
             datetime.strptime(value_str, '%Y-%m-%d')
             if value <= datetime.now().date():
-                raise serializers.ValidationError('suspension date cannot be later than today')
+                raise serializers.ValidationError('Suspension date cannot be later than today')
         except ValueError:
             raise serializers.ValidationError("Invalid date format. It must be in YYYY-MM-DD format.")
         
         return value_str
+
 
 class ExportStaffIdSerializer(serializers.Serializer):
     ids = serializers.ListField(child=serializers.IntegerField())

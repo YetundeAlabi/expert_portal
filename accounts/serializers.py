@@ -1,11 +1,12 @@
+from datetime import datetime
+
 from django.contrib.auth import get_user_model, authenticate
 
 from rest_framework import serializers
 
 from staff_mgt import validators
 from .models import ActivityLog
-from base.constants import CREATED, UPDATED, DELETED, UNREAD, READ
-
+from base.constants import CREATED, UPDATED
 
 User = get_user_model()
 
@@ -77,11 +78,28 @@ class ActivityLogSerializer(serializers.ModelSerializer):
                 return f"{obj.action_type} {obj.content_object.staff.get_full_name()}'s profile"
         elif obj.action_type == CREATED:
             if obj.content_type.model == 'squad':
-                return f"{obj.action_type} a new squad {obj.content_object.name}"
+                return f"{obj.action_type} a new squad" #{obj.content_object.name}"
             elif obj.content_type.model == 'officeaddress':
                 return f"{obj.action_type} a new office address"
             elif obj.content_type.model == 'tribe':
-                return f"A new tribe was {obj.action_type} {obj.content_object.name}"
+                return f"A new tribe was {obj.action_type}"
     
     def get_date_created(self, obj):
         return obj.action_time.date().isoformat()
+
+
+class DateSerializer(serializers.Serializer):
+    """ Serializer for date used for sorting activity log"""
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+
+    def validate(self, data):
+        start_date = data['start_date']
+        end_date = data['end_date']
+        
+        """
+        Check that start date is less than end time 
+        """
+        if start_date > end_date or end_date > datetime.now().date():
+            raise serializers.ValidationError("Incorrect date format")
+        return data 

@@ -6,9 +6,7 @@ from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 
-from accounts.serializers import (
-    UserLoginSerializer, UserSerializer, ForgetPasswordSerializer, 
-    VerifyPinSerializer, ResetPasswordSerializer, ActivityLogSerializer)
+from accounts import serializers
 from .tasks import send_email
 from .models import ActivityLog
 # Create your views here.
@@ -21,13 +19,13 @@ class LoginAPIView(GenericAPIView):
     """
     authentication_classes = ()
     permission_classes = []
-    serializer_class = UserLoginSerializer
+    serializer_class = serializers.UserLoginSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
-        serializer = UserSerializer(user)
+        serializer = serializers.UserSerializer(user)
         token = RefreshToken.for_user(user)
         data = serializer.data
         data["tokens"] = {"refresh": str(
@@ -52,7 +50,7 @@ class LogoutView(GenericAPIView):
         
 
 class ForgetPasswordView(GenericAPIView):
-    serializer_class = ForgetPasswordSerializer
+    serializer_class = serializers.ForgetPasswordSerializer
     authentication_classes = ()
     permission_classes = []
 
@@ -80,7 +78,7 @@ class ForgetPasswordView(GenericAPIView):
 
 
 class VerifyPinView(GenericAPIView):
-    serializer_class = VerifyPinSerializer
+    serializer_class = serializers.VerifyPinSerializer
     authentication_classes = ()
     permission_classes = []
 
@@ -100,7 +98,7 @@ class VerifyPinView(GenericAPIView):
 
 
 class ResetPasswordView(GenericAPIView):
-    serializer_class = ResetPasswordSerializer
+    serializer_class = serializers.ResetPasswordSerializer
     authentication_classes = ()
     permission_classes = []
 
@@ -118,6 +116,32 @@ class ResetPasswordView(GenericAPIView):
     
 
 class ActivityLogAPIView(ListAPIView):
-    serializer_class = ActivityLogSerializer
+    serializer_class = serializers.ActivityLogSerializer
+    queryset = ActivityLog.objects.all()
+    authentication_classes = ()
+    permission_classes = []
+
+
+class ActivityLogSortAPIView(GenericAPIView):
+    """
+    Endpoint for getting activity log sorted by date range.
+    expects start date and end date
+    """
+    authentication_classes = ()
+    permission_classes = []
+    serializer_class = serializers.DateSerializer
     queryset = ActivityLog.objects.all()
 
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # format the start and end date. filter by succes is true
+        start_date = serializer.validated_data["start_date"]
+        end_date = serializer.validated_data["end_date"]
+        queryset = self.get_queryset().filter(action_time__range=[start_date, end_date])[:20]
+
+        serializer = serializers.ActivityLogSerializer(queryset, many=True)
+        return Response({"message": "Sorted activity log", "data": serializer.data}, status=status.HTTP_200_OK)
+    
+
+# class Export
