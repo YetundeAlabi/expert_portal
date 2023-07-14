@@ -2,19 +2,19 @@ from datetime import datetime
 
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+from rest_framework.validators import UniqueValidator
 
-
-from base import validators
+from staff_mgt.validators import validate_email_domain, unique_email, validate_image_extension
 from staff_mgt.models import Staff, Admin
 from accounts.serializers import UserSerializer
 
-# today = timezone.now().date()
+
 
 class StaffSerializer(serializers.ModelSerializer):
     """Seriaizer for creating and updating staff"""
-    email = serializers.EmailField(validators=[validators.validate_email_domain])
-    alias_email = serializers.EmailField(validators=[validators.validate_email_domain])
-    picture = serializers.ImageField(validators=[validators.validate_image_extension])
+    email = serializers.EmailField(validators=[validate_email_domain, unique_email])
+    alias_email = serializers.EmailField(validators=[validate_email_domain, unique_email])
+    picture = serializers.ImageField(validators=[validate_image_extension])
    
     class Meta:
         model = Staff
@@ -24,9 +24,9 @@ class StaffSerializer(serializers.ModelSerializer):
 
 class StaffListSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
-    url = serializers.SerializerMethodField(read_only=True)
-    tribe = serializers.CharField(source="tribe.name")
-    squad = serializers.CharField(source="squad.name")
+    url = serializers.SerializerMethodField()
+    tribe = serializers.CharField(source="tribe.name", read_only=True)
+    squad = serializers.CharField(source="squad.name", read_only=True)
 
     class Meta:
         model = Staff
@@ -60,8 +60,12 @@ class SuspendStaffSerializer(serializers.Serializer):
         value_str = value.strftime('%Y-%m-%d')
         try:
             datetime.strptime(value_str, '%Y-%m-%d')
+            if value <= datetime.now().date():
+                raise serializers.ValidationError('suspension date cannot be later than today')
         except ValueError:
             raise serializers.ValidationError("Invalid date format. It must be in YYYY-MM-DD format.")
         
         return value_str
 
+class ExportStaffIdSerializer(serializers.Serializer):
+    ids = serializers.ListField(child=serializers.IntegerField())

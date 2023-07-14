@@ -5,10 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
-
 from staff_mgt.models import Staff, Admin, Tribe, Squad
 from base.mixins import ActivityLogMixin
-from .serializers import StaffSerializer, StaffListSerializer, AdminSerializer, SuspendStaffSerializer
+from .serializers import StaffSerializer, StaffListSerializer, AdminSerializer, SuspendStaffSerializer, ExportStaffIdSerializer
 from base.constants import FEMALE, MALE
 from base.utils import export_data
 
@@ -47,12 +46,11 @@ class StaffCreateAPIView(ActivityLogMixin, GenericAPIView):
         
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            data = serializer.data
-            return Response({'message': 'Staff created successfully', 'data': data}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data = serializer.data
+        return Response({'message': 'Staff created successfully', 'data': data}, status=status.HTTP_201_CREATED)
+      
 
 class StaffListAPIView(ListAPIView):
     queryset = Staff.objects.all()
@@ -86,15 +84,17 @@ class ExportStaffAPIView(ActivityLogMixin, GenericAPIView):
     Endpoint to get selected staff as a csv. expects ids of the selected staff
     """
     queryset = Staff.objects.all()
-    serializer_class = StaffListSerializer
+    serializer_class = ExportStaffIdSerializer
 
     def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        staff_ids = serializer.validated_data['ids']
         model_name = self.get_serializer().Meta.model.__name__
         file_name = f'{model_name.lower()}.csv' 
-        staff_ids = request.data.get('staff_ids', [])
-
+        
         queryset = self.get_queryset.filter(id__in=staff_ids)
-        serializer = self.get_serializer(queryset, many=True)
+        serializer = StaffListSerializer(queryset, many=True)
 
         file = export_data(serializer=serializer, file_name=file_name)
         return file

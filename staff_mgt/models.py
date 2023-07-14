@@ -2,18 +2,12 @@ from pytz import country_names
 
 from django.db import models
 from django.urls import reverse
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
-from django.utils.crypto import get_random_string
 from django.contrib.auth import get_user_model
-
-
 from phonenumber_field.modelfields import PhoneNumberField
 
 from base.managers import ActiveUserManager
 from base.models import BaseModel
 from base.constants import FEMALE, MALE, DIVORCED, MARRIED, SINGLE, WIDOWED
-
 from base.models import DeletableBaseModel
 
 User= get_user_model()
@@ -92,7 +86,7 @@ class StaffBaseModel(BaseModel):
     tribe = models.ForeignKey('Tribe', on_delete=models.SET_NULL, null=True, blank=True) #to avoid circular import error
     squad = models.ForeignKey('Squad', on_delete=models.SET_NULL, null=True, blank=True)
     role = models.CharField(max_length=255)
-    phone_number = PhoneNumberField()
+    phone_number = PhoneNumberField(unique=True)
     work_phone = PhoneNumberField(blank=True)
     address = models.ForeignKey('OfficeAddress', on_delete=models.SET_NULL, null=True)
     next_of_kin_first_name = models.CharField(max_length=150)
@@ -120,6 +114,7 @@ class Staff(StaffBaseModel):
         indexes = [
             models.Index(fields=["last_name", "first_name", "email"]),
         ]
+        ordering = ["first_name"]
     def __str__(self):
         return self.get_full_name()
 
@@ -134,15 +129,6 @@ class Staff(StaffBaseModel):
         return self.is_active
 
 
-@receiver(pre_save, sender=Staff) #Signal to create unique identifier for staff
-def generate_unique_identifier(sender, instance, **kwargs):
-    if not instance.unique_id:
-        random_digits = get_random_string(length=7, allowed_chars="0123456789")
-        random_alphabet = get_random_string(length=1, allowed_chars="ABCDEFGHIJ")
-        unique_id = f"{random_alphabet}{random_digits}"
-        instance.unique_id = unique_id
-
-
 class Admin(StaffBaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     
@@ -151,12 +137,3 @@ class Admin(StaffBaseModel):
 
     def get_full_name(self):
         return f'{self.user.first_name} {self.user.last_name}'
-
-@receiver(pre_save, sender=Admin)
-def generate_unique_identifier(sender, instance, **kwargs):
-    if not instance.unique_id:
-        random_digits = get_random_string(length=7, allowed_chars="0123456789")
-        random_alphabet = get_random_string(length=1, allowed_chars="ABCDEFGHIJ")
-        unique_id = f"{random_alphabet}{random_digits}"
-        instance.unique_id = unique_id
-

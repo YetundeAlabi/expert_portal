@@ -2,7 +2,10 @@ from django.contrib.auth import get_user_model, authenticate
 
 from rest_framework import serializers
 
-from base import validators
+from staff_mgt import validators
+from .models import ActivityLog
+from base.constants import CREATED, UPDATED, DELETED, UNREAD, READ
+
 
 User = get_user_model()
 
@@ -21,7 +24,6 @@ class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("email", "password")
-
 
     def validate(self, validated_data):
         user = authenticate(**validated_data)
@@ -58,3 +60,28 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
         if attrs['new_password'] != attrs['confirm_password']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
         return attrs
+
+
+class ActivityLogSerializer(serializers.ModelSerializer):
+    actor = serializers.CharField(source='actor.get_full_name')
+    action = serializers.SerializerMethodField()
+    date_created = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = ActivityLog
+        fields = ['id', 'actor', 'action_time', 'status', 'action', 'date_created']
+
+    def get_action(self, obj):
+        if obj.action_type == UPDATED:
+            if obj.content_type.model == 'staff':
+                return f"{obj.action_type} {obj.content_object.staff.get_full_name()}'s profile"
+        elif obj.action_type == CREATED:
+            if obj.content_type.model == 'squad':
+                return f"{obj.action_type} a new squad {obj.content_object.name}"
+            elif obj.content_type.model == 'officeaddress':
+                return f"{obj.action_type} a new office address"
+            elif obj.content_type.model == 'tribe':
+                return f"A new tribe was {obj.action_type} {obj.content_object.name}"
+    
+    def get_date_created(self, obj):
+        return obj.action_time.date().isoformat()

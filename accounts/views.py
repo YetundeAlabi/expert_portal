@@ -2,14 +2,15 @@ import random
 from django.contrib.auth import get_user_model
 
 from rest_framework import status
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 
 from accounts.serializers import (
     UserLoginSerializer, UserSerializer, ForgetPasswordSerializer, 
-    VerifyPinSerializer, ResetPasswordSerializer)
+    VerifyPinSerializer, ResetPasswordSerializer, ActivityLogSerializer)
 from .tasks import send_email
+from .models import ActivityLog
 # Create your views here.
 
 User = get_user_model()
@@ -114,3 +115,9 @@ class ResetPasswordView(GenericAPIView):
             user.save()
             return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
         return Response({"message": "Invalid email address"}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class ActivityLogAPIView(ListAPIView):
+    serializer_class = ActivityLogSerializer
+    queryset = ActivityLog.objects.all()
+
