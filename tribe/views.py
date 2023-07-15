@@ -5,7 +5,6 @@ from rest_framework.generics import (
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status,filters
-from django_filters.rest_framework import DjangoFilterBackend
 
 from staff_mgt.models import Tribe, Squad, Region, OfficeAddress
 from base.mixins import ActivityLogMixin
@@ -13,7 +12,7 @@ from tribe import serializers
 from base.utils import  export_data
 
 
-class TribeCreateAPIView(GenericAPIView):
+class TribeCreateAPIView(ActivityLogMixin, GenericAPIView):
     queryset = Tribe.objects.all()
     serializer_class = serializers.TribeSerializer
 
@@ -83,10 +82,9 @@ class SquadDetailUpdateAPIView(RetrieveUpdateAPIView):
         return super().get_queryset().filter(tribe_id=tribe_pk)
     
     
-class SquadListCreateAPIView(generics.ListCreateAPIView):
+class SquadListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
     queryset = Squad.objects.all()
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ["tribe__name", "name"]
+    filter_backends = [filters.SearchFilter]
     search_fields = ["name", "tribe__name"]
 
     def get_queryset(self):
@@ -135,7 +133,7 @@ class CountryListAPIView(ListAPIView):
     serializer_class = serializers.RegionSerializer
 
 
-class OfficeAddressListCreateAPIView(   generics.ListCreateAPIView):
+class OfficeAddressListCreateAPIView(generics.ListCreateAPIView):
     queryset = OfficeAddress.objects.all()
     serializer_class = serializers.OfficeAddressSerializer
     lookup_field = 'pk'

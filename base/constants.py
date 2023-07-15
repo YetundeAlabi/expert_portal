@@ -9,7 +9,7 @@ SINGLE = "Single"
 WIDOWED = "Widowed"
 
 # log activity
-CREATED, READ, UPDATED, DELETED = "Create", "Read", "Update", "Delete"
+CREATED, READ, UPDATED, DELETED = "Created", "Read", "Updated", "Deleted"
 SUCCESS, FAILED = "Success", "Failed"
 
 # afex countries

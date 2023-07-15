@@ -11,8 +11,6 @@ ACTION_TYPES = [
     (UPDATED, UPDATED),
     (DELETED, DELETED),  
 ]
-
-
 ACTION_STATUS = [(SUCCESS, SUCCESS), (FAILED, FAILED)]
 
 
@@ -53,6 +51,7 @@ class ActivityLog(models.Model):
     action_time = models.DateTimeField(auto_now_add=True)
     remarks = models.TextField(blank=True, null=True)
     status = models.CharField(choices=ACTION_STATUS, max_length=7, default=SUCCESS)
+    data = models.JSONField(default=dict, null=True)
     content_type = models.ForeignKey(ContentType, models.SET_NULL, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey()

@@ -47,7 +47,12 @@ class ActivityLogMixin:
             data["content_type"] = ContentType.objects.get_for_model(
                 self.get_queryset().model
             )
-            data["content_object"] = self.get_object()
+            if data['action_type'] == CREATED:
+                data["content_object"] = self.created_obj
+                data["object_id"] = self.created_obj.id
+            else:
+                data["content_object"] = self.get_object()
+                data["object_id"] = self.get_object().id
         except (AttributeError, ValidationError):
             data["content_type"] = None
         except AssertionError:
