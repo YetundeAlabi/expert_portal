@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 from base.managers import UserManager
-from base.constants import CREATED, UPDATED, DELETED, UNREAD, READ
+from base.constants import CREATED, UPDATED, DELETED, SUCCESS, FAILED
 
 ACTION_TYPES = [
     (CREATED, CREATED),
@@ -12,7 +12,8 @@ ACTION_TYPES = [
     (DELETED, DELETED),  
 ]
 
-ACTION_STATUS = [(UNREAD, UNREAD), (READ, READ)]
+
+ACTION_STATUS = [(SUCCESS, SUCCESS), (FAILED, FAILED)]
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -51,7 +52,7 @@ class ActivityLog(models.Model):
     action_type = models.CharField(choices=ACTION_TYPES, max_length=15)
     action_time = models.DateTimeField(auto_now_add=True)
     remarks = models.TextField(blank=True, null=True)
-    status = models.CharField(choices=ACTION_STATUS, max_length=7)
+    status = models.CharField(choices=ACTION_STATUS, max_length=7, default=SUCCESS)
     content_type = models.ForeignKey(ContentType, models.SET_NULL, blank=True, null=True)
     object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey()

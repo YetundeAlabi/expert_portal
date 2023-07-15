@@ -9,6 +9,8 @@ from rest_framework.response import Response
 from accounts import serializers
 from .tasks import send_email
 from .models import ActivityLog
+from staff_mgt.models import Admin
+from staff_mgt.serializers import AdminSerializer
 # Create your views here.
 
 User = get_user_model()
@@ -25,13 +27,16 @@ class LoginAPIView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
-        serializer = serializers.UserSerializer(user)
         token = RefreshToken.for_user(user)
+        # Retrieve the admin details
+        admin = Admin.objects.get(user=user)
+        serializer = AdminSerializer(admin)
         data = serializer.data
+        # data = serializer.data
         data["tokens"] = {"refresh": str(
             token), "access": str(token.access_token)}
 
-        return Response(data, status=status.HTTP_200_OK)
+        return Response({"message": "Admin login sucessful", "data": data}, status=status.HTTP_200_OK)
 
 
 class LogoutView(GenericAPIView):

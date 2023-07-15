@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework.exceptions import ValidationError
 
 from accounts.models import ActivityLog
-from base.constants import READ, UNREAD, CREATED, UPDATED, DELETED
+from base.constants import SUCCESS, FAILED, CREATED, UPDATED, DELETED
 
 
 class ActivityLogMixin:
@@ -36,11 +36,13 @@ class ActivityLogMixin:
         return request.user if request.user.is_authenticated else None
     
     def _write_log(self, request, response):
+        status = SUCCESS if response.status_code < 400 else FAILED
         actor = self._get_user(request)
 
         data = {
             "actor": actor,
             "action_type": self._get_action_type(request),
+            "status": status,
             "remarks": self.get_log_message(request),
         }
         try:

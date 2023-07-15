@@ -16,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["email", "first_name","last_name", "is_active"]
         
+        
 
 class UserLoginSerializer(serializers.ModelSerializer):
     """Serializer to authenticate users with email and password"""
