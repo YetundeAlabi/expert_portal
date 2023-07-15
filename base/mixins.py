@@ -1,12 +1,9 @@
-import logging
-
-from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
 from rest_framework.exceptions import ValidationError
 
 from accounts.models import ActivityLog
-from base.constants import SUCCESS, FAILED, CREATED, UPDATED, DELETED
+from base.constants import SUCCESS, FAILED, CREATED, READ, UPDATED, DELETED
 
 
 class ActivityLogMixin:
@@ -17,7 +14,7 @@ class ActivityLogMixin:
         return self.action_type_mapper().get(f"{request.method}")
     
     def _build_log_message(self, request):
-        return f"User: {self._get_user(request)} -- Action Type: {self._get_action_type(request)}"
+        return f"User: {self._get_user(request)} -- Action Type: {self._get_action_type(request)} -- Path: {request.path} -- Path Name: {request.resolver_match.url_name}"
     
     def get_log_message(self, request) -> str:
         return self.log_message or self._build_log_message(request)
@@ -25,6 +22,7 @@ class ActivityLogMixin:
     @staticmethod
     def action_type_mapper():
         return {
+            "GET": READ,
             "POST": CREATED,
             "PUT": UPDATED,
             "PATCH": UPDATED,

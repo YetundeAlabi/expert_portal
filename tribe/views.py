@@ -13,7 +13,7 @@ from tribe import serializers
 from base.utils import  export_data
 
 
-class TribeCreateAPIView(ActivityLogMixin, GenericAPIView):
+class TribeCreateAPIView(GenericAPIView):
     queryset = Tribe.objects.all()
     serializer_class = serializers.TribeSerializer
 
@@ -74,7 +74,7 @@ class ExportTribeAPIView(GenericAPIView):
         return file
     
 
-class SquadDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
+class SquadDetailUpdateAPIView(RetrieveUpdateAPIView):
     queryset = Squad.objects.all()
     serializer_class = serializers.SquadSerializer
 
@@ -83,10 +83,10 @@ class SquadDetailUpdateAPIView(ActivityLogMixin, RetrieveUpdateAPIView):
         return super().get_queryset().filter(tribe_id=tribe_pk)
     
     
-class SquadListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
+class SquadListCreateAPIView(generics.ListCreateAPIView):
     queryset = Squad.objects.all()
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ["tribe", "name"]
+    filterset_fields = ["tribe__name", "name"]
     search_fields = ["name", "tribe__name"]
 
     def get_queryset(self):
@@ -135,7 +135,7 @@ class CountryListAPIView(ListAPIView):
     serializer_class = serializers.RegionSerializer
 
 
-class OfficeAddressListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
+class OfficeAddressListCreateAPIView(   generics.ListCreateAPIView):
     queryset = OfficeAddress.objects.all()
     serializer_class = serializers.OfficeAddressSerializer
     lookup_field = 'pk'
