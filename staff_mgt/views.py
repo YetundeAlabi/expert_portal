@@ -13,7 +13,7 @@ from base.utils import export_data
 
 class DashboardAPIView(GenericAPIView):
     """ 
-    An endpoint to get dashboard paramaters 
+    An endpoint to get dashboard paramaters.
     """
     serializer_class = serializers.StaffListSerializer
 
