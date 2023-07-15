@@ -39,11 +39,10 @@ class LoginAPIView(GenericAPIView):
             return Response({"message": "You are not an admin"}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = AdminSerializer(admin)
         data = serializer.data
-        # data = serializer.data
         data["tokens"] = {"refresh": str(
             token), "access": str(token.access_token)}
 
-        return Response({"message": "Admin login sucessful", "data": data}, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class LogoutView(GenericAPIView):
