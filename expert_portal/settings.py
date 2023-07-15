@@ -10,10 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+import dj_database_url
 from datetime import timedelta
 from pathlib import Path
-
-import dj_database_url
 from decouple import config
 from dotenv import load_dotenv
 
@@ -51,7 +50,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "corsheaders",
-
     "rest_framework",
     "rest_framework_simplejwt",
     'rest_framework_simplejwt.token_blacklist',
@@ -64,8 +62,6 @@ INSTALLED_APPS = [
     "accounts",
     "staff_mgt",
     "tribe",
-    
-
 ]
 
 MIDDLEWARE = [
@@ -211,14 +207,6 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
 
 CELERY_ACCEPT_CONTENT = ['application/json']
 
-# CELERY_RESULT_SERIALIZER = 'json'
-# result_serializer = 'json'
-
-# CELERY_TASK_SERIALIZER = 'json'
-# task_serializer = 'json'
-
 CELERY_TIMEZONE = 'Africa/Lagos'
-# timezone = 'Africa/Lagos'
 
 CELERY_RESULT_BACKEND = 'django-db'
-# result_backend= 'django-db'

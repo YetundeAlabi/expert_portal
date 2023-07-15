@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
-from staff_mgt.models import Staff, Admin, Tribe, Squad
+from staff_mgt.models import Staff, Tribe, Squad
 from staff_mgt import serializers
 from base.constants import FEMALE, MALE
 from base.utils import export_data

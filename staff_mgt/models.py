@@ -3,6 +3,7 @@ from pytz import country_names
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+
 from phonenumber_field.modelfields import PhoneNumberField
 
 from base.managers import ActiveUserManager
@@ -44,13 +45,14 @@ class OfficeAddress(DeletableBaseModel):
     is_headquarter = models.BooleanField(default=False)
     
     def __str__(self):
-        return f'{self.city},{self.region.name}'
+        return f'{self.city}, {self.region.name}'
 
 
 class Tribe(BaseModel):
     name = models.CharField(max_length=255, unique=True, db_index=True)
     description = models.TextField()
-    tribe_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, null=True, blank=True, related_name="tribe_lead")
+    tribe_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, null=True, blank=True, 
+                                   related_name="tribe_lead")
 
     def get_staff_count(self):
        return self.staff_set.count()
@@ -66,7 +68,8 @@ class Squad(BaseModel):
     name = models.CharField(max_length=255, unique=True, db_index=True) 
     description = models.TextField()
     tribe = models.ForeignKey(Tribe, on_delete=models.SET_NULL, null=True, related_name="squads")
-    squad_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, blank = True, null=True, related_name="squad_lead")
+    squad_lead = models.ForeignKey("Staff", on_delete=models.SET_NULL, blank = True, null=True, 
+                                   related_name="squad_lead")
 
     def get_member_count(self):
         return self.staff_set.count()

@@ -19,7 +19,8 @@ class TribeCreateAPIView(ActivityLogMixin, GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            tribe=serializer.save()
+            self.created_obj = tribe #to get created_obj id in the activity log mixin
             data = serializer.data
             return Response({'message': 'Tribe created successfully', 'data': data}, 
                             status=status.HTTP_201_CREATED)
@@ -102,6 +103,12 @@ class SquadListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
         context["request"] = self.request
         return context
 
+    def perform_create(self, serializer):
+        """ overiding this method to get created_obj id in the activity log mixin"""
+        squad = serializer.save()
+        self.created_obj = squad
+        return Response({'message': 'Squad created succesfully'}, status=status.HTTP_201_CREATED)
+    
 
 class ExportSquadAPIView(GenericAPIView):
     serializer_class = serializers.ExportSquadSerializer
@@ -133,7 +140,7 @@ class CountryListAPIView(ListAPIView):
     serializer_class = serializers.RegionSerializer
 
 
-class OfficeAddressListCreateAPIView(generics.ListCreateAPIView):
+class OfficeAddressListCreateAPIView(ActivityLogMixin, generics.ListCreateAPIView):
     queryset = OfficeAddress.objects.all()
     serializer_class = serializers.OfficeAddressSerializer
     lookup_field = 'pk'
@@ -147,7 +154,12 @@ class OfficeAddressListCreateAPIView(generics.ListCreateAPIView):
         context["region_id"] = self.kwargs["region_pk"]
         context["request"] = self.request
         return context
-
+    
+    def perform_create(self, serializer):
+        """ overiding this method to get created_obj id in the activity log mixin"""
+        office_address = serializer.save()
+        self.created_obj = office_address
+        return Response({'message': 'Office address created succesfully'}, status=status.HTTP_201_CREATED)
 
 class OfficeAddressListAPIView(ListAPIView): 
     """

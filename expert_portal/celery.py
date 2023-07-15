@@ -21,8 +21,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     "run_every_12:00am": {
     "task": 'staff_mgt.tasks.suspend_staff',
-    'schedule': crontab(minute='*/2'),
-    # "schedule" : crontab(minute=0, hour=0), # Executes every morning at 12:00 a.m
+    "schedule" : crontab(minute=0, hour=0), # Executes every morning at 12:00 a.m
     }
 }
 

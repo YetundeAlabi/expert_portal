@@ -75,7 +75,6 @@ class ForgetPasswordView(GenericAPIView):
             otp = str(random.randint(100000, 999999)) #generate 6 digits random number as otp
             user.verification_code = otp
             user.save(update_fields=["verification_code"])
-
             #send email
             subject = "Password Reset Verification Pin"
             body = f'Your verification pin is {otp}'
@@ -96,11 +95,13 @@ class VerifyPinView(GenericAPIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data["email"]
         verification_code = serializer.validated_data["verification_code"]
-
-        user = User.objects.filter(email=email).get()
+        try:
+            user = User.objects.filter(email=email).get()
+        except User.DoesNotExist: 
+            return Response({"message": "Incorrect credential"}, status=status.HTTP_404_NOT_FOUND)
         print(user.verification_code)
         if user.verification_code != verification_code:
-            return Response({"message": "Incorrect Verification Pin."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Incorrect verification pin."}, status=status.HTTP_400_BAD_REQUEST)
         user.verification_code = ""
         user.save(update_fields=["verification_code"])
         return Response({"message": "verification successful"}, status=status.HTTP_200_OK)

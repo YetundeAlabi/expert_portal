@@ -79,11 +79,11 @@ class ActivityLogSerializer(serializers.ModelSerializer):
                 return f"{obj.action_type} {obj.content_object.staff.get_full_name()}'s profile"
         elif obj.action_type == CREATED:
             if obj.content_type.model == 'squad':
-                return f"{obj.action_type} a new squad {obj.content_object} for {obj.content_object}"
+                return f"{obj.action_type} a new squad {obj.content_object.name} for {obj.content_object.tribe.name}"
             elif obj.content_type.model == 'officeaddress':
-                return f"{obj.action_type} a new office address"
+                return f"{obj.action_type} a new office address {obj.content_object.city} in {obj.content_object.region.name}"
             elif obj.content_type.model == 'tribe':
-                return f"A new tribe was {obj.action_type} {obj.content_object}"
+                return f"A new tribe was {obj.action_type} {obj.content_object.name}"
     
     def get_date_created(self, obj):
         date = obj.action_time.strftime('%dth %B %Y')
