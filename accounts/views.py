@@ -1,4 +1,5 @@
 import random
+
 from django.contrib.auth import get_user_model
 
 from rest_framework import status
@@ -11,9 +12,12 @@ from .tasks import send_email
 from .models import ActivityLog
 from staff_mgt.models import Admin
 from staff_mgt.serializers import AdminSerializer
-# Create your views here.
+from base.pagination import StandardResultsSetPagination
+from base.constants import SUCCESS
+from base.utils import  export_data
 
 User = get_user_model()
+
 
 class LoginAPIView(GenericAPIView):
     """
@@ -29,7 +33,10 @@ class LoginAPIView(GenericAPIView):
         user = serializer.validated_data
         token = RefreshToken.for_user(user)
         # Retrieve the admin details
-        admin = Admin.objects.get(user=user)
+        try:
+            admin = Admin.objects.get(user=user)
+        except Admin.DoesNotExist:
+            return Response({"message": "You are not an admin"}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = AdminSerializer(admin)
         data = serializer.data
         # data = serializer.data
@@ -48,7 +55,6 @@ class LogoutView(GenericAPIView):
             refresh_token = request.data["refresh_token"]
             token = RefreshToken(refresh_token)
             token.blacklist()
-
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -68,7 +74,6 @@ class ForgetPasswordView(GenericAPIView):
                 return Response({"error": "Invalid email address. Enter a correct email address"}, status=status.HTTP_400_BAD_REQUEST)
             
             otp = str(random.randint(100000, 999999)) #generate 6 digits random number as otp
-            print(len(otp))
             user.verification_code = otp
             user.save(update_fields=["verification_code"])
 
@@ -123,8 +128,10 @@ class ResetPasswordView(GenericAPIView):
 class ActivityLogAPIView(ListAPIView):
     serializer_class = serializers.ActivityLogSerializer
     queryset = ActivityLog.objects.all()
-    authentication_classes = ()
-    permission_classes = []
+    pagination_class = StandardResultsSetPagination
+    
+    def get_queryset(self):
+        return super().get_queryset().filter(status=SUCCESS)
 
 
 class ActivityLogSortAPIView(GenericAPIView):
@@ -132,21 +139,39 @@ class ActivityLogSortAPIView(GenericAPIView):
     Endpoint for getting activity log sorted by date range.
     expects start date and end date
     """
-    authentication_classes = ()
-    permission_classes = []
     serializer_class = serializers.DateSerializer
     queryset = ActivityLog.objects.all()
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        return super().get_queryset().filter(status=SUCCESS, actor__email="nimi@afex.com")
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        # format the start and end date. filter by succes is true
+       
         start_date = serializer.validated_data["start_date"]
         end_date = serializer.validated_data["end_date"]
-        queryset = self.get_queryset().filter(action_time__range=[start_date, end_date])[:20]
+
+        queryset = self.get_queryset().filter(action_time__range=[start_date, end_date])[:10]
 
         serializer = serializers.ActivityLogSerializer(queryset, many=True)
         return Response({"message": "Sorted activity log", "data": serializer.data}, status=status.HTTP_200_OK)
     
 
-# class Export
+class ExportActivityLogAPIView(GenericAPIView):
+    """
+    Endpoint to export activity log
+    """
+    queryset = ActivityLog.objects.all()
+    serializer_class = serializers.ActivityLogSerializer
+
+    def get(self, request, *args, **kwargs):
+        model_name = self.get_serializer().Meta.model.__name__
+        file_name = f'{model_name.lower()}.txt'
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        file = export_data(serializer=serializer, file_name=file_name)
+        return file
+    

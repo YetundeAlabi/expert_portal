@@ -9,6 +9,7 @@ urlpatterns = [
     path("forget-password/", views.ForgetPasswordView.as_view(), name="forget_password"),
     path("verify-pin/", views.VerifyPinView.as_view(), name="verify_pin"),
     path("reset-password/", views.ResetPasswordView.as_view(), name="reset-password"),
-    path("activitylog/", views.ActivityLogAPIView.as_view(), name='activity_log'),
-    path("sortactivitylog/", views.ActivityLogSortAPIView.as_view(), name='activity_log')
+    path("activity-log/", views.ActivityLogAPIView.as_view(), name='activity_log'),
+    path("activity-log/sorted", views.ActivityLogSortAPIView.as_view(), name='activity_log'),
+    path("activity-log/export", views.ExportActivityLogAPIView.as_view(), name='export_activity_log')
 ]

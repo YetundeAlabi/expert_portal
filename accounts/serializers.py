@@ -29,7 +29,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
     def validate(self, validated_data):
         user = authenticate(**validated_data)
-        if user.is_admin:
+        if user and user.is_admin:
             if not user.is_active:
                 raise serializers.ValidationError("You have been suspended")
             return user
@@ -71,7 +71,7 @@ class ActivityLogSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ActivityLog
-        fields = ['id', 'actor', 'action_time', 'status', 'action', 'date_created']
+        fields = ['actor', 'action', 'date_created']
 
     def get_action(self, obj):
         if obj.action_type == UPDATED:
@@ -79,14 +79,17 @@ class ActivityLogSerializer(serializers.ModelSerializer):
                 return f"{obj.action_type} {obj.content_object.staff.get_full_name()}'s profile"
         elif obj.action_type == CREATED:
             if obj.content_type.model == 'squad':
-                return f"{obj.action_type} a new squad" #{obj.content_object.name}"
+                return f"{obj.action_type} a new squad {obj.content_object} for {obj.content_object}"
             elif obj.content_type.model == 'officeaddress':
                 return f"{obj.action_type} a new office address"
             elif obj.content_type.model == 'tribe':
-                return f"A new tribe was {obj.action_type}"
+                return f"A new tribe was {obj.action_type} {obj.content_object}"
     
     def get_date_created(self, obj):
-        return obj.action_time.date().isoformat()
+        date = obj.action_time.strftime('%dth %B %Y')
+        time = obj.action_time.strftime('%I:%M %p')
+        return f'{date} at {time}'
+    
 
 
 class DateSerializer(serializers.Serializer):

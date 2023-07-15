@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from rest_framework.generics import RetrieveAPIView, GenericAPIView, ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status, filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -103,14 +103,6 @@ class ExportStaffAPIView(GenericAPIView):
 
         file = export_data(serializer=serializer, file_name=file_name)
         return file
-
-
-class AdminDetailAPIView(RetrieveAPIView):
-    """
-    Endpoint to get current user(i.e Admin) profile details
-    """
-    queryset = Admin.objects.all()
-    serializer_class = serializers.AdminSerializer
 
 
 class SuspendStaffAPIView(GenericAPIView):
