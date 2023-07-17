@@ -38,6 +38,7 @@ class LoginAPIView(GenericAPIView):
         except Admin.DoesNotExist:
             return Response({"message": "You are not an admin"}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = AdminSerializer(admin)
+        
         data = serializer.data
         data["tokens"] = {"refresh": str(
             token), "access": str(token.access_token)}

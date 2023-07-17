@@ -45,10 +45,14 @@ class StaffListSerializer(serializers.ModelSerializer):
 
 class AdminSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    tribe = serializers.CharField(source='tribe.name')
+    squad = serializers.CharField(source='squad.name')
+
 
     class Meta:
         model = Admin
         fields = "__all__"
+        
         read_only_fields = ["id", "unique_id"]
         
 
