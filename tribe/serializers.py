@@ -135,6 +135,7 @@ class OfficeAddressSerializer(serializers.ModelSerializer):
 
 class OfficeAddressListSerializer(serializers.ModelSerializer):
     """ Serializer for listing office address"""
+    region = serializers.CharField(source='region.name')
     delete_url = serializers.HyperlinkedIdentityField(
         view_name="tribe:delete_office_address",
         lookup_field = "pk",
@@ -144,7 +145,7 @@ class OfficeAddressListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = OfficeAddress
-        fields = ["is_headquarter", "id", "description", "city", "edit_url", "delete_url"]
+        fields = ["is_headquarter", "id", "description", "region", "city", "edit_url", "delete_url"]
 
     def get_edit_url(self, obj):
         request = self.context.get('request')

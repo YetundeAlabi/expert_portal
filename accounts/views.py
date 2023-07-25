@@ -114,10 +114,10 @@ class ResetPasswordView(GenericAPIView):
     permission_classes = []
 
     def post(self, request):
-        serilizer = self.get_serializer(data=request.data)
-        serilizer.is_valid(raise_exception=True)
-        email = serilizer.validated_data["email"]
-        new_password = serilizer.validated_data["new_password"]
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"]
+        new_password = serializer.validated_data["new_password"]
         user = User.objects.filter(email=email).get()
         if user:
             user.set_password(new_password)

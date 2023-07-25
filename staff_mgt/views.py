@@ -1,23 +1,37 @@
 from datetime import datetime
 
-from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveUpdateAPIView
-from rest_framework.response import Response
-from rest_framework import status, filters
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status
+from rest_framework.generics import (GenericAPIView, ListAPIView,
+                                     RetrieveUpdateAPIView)
+from rest_framework.response import Response
 
-from staff_mgt.models import Staff, Tribe, Squad
-from staff_mgt import serializers
 from base.constants import FEMALE, MALE
 from base.utils import export_data
+from staff_mgt import serializers
+from staff_mgt.models import Squad, Staff, Tribe
 
+
+def latest_object(MyModel):
+    now = timezone.now()
+    latest_obj = MyModel.objects.latest("date_created").date_created
+
+    days_ago = (now - latest_obj).days
+    return days_ago
+    
 
 class DashboardAPIView(GenericAPIView):
     """ 
     An endpoint to get dashboard paramaters.
     """
     serializer_class = serializers.StaffListSerializer
+    authentication_classes = ()
+    permission_classes = ()
 
     def get(self, request, *args, **kwargs):
+        latest_tribe = latest_object(Tribe)
+        latest_squad = latest_object(Squad)
         recent_staff = Staff.active_objects.order_by("-date_created")[:10]
         male_staff = Staff.objects.filter(gender=MALE).count()
         female_staff = Staff.objects.filter(gender=FEMALE).count()
@@ -34,6 +48,8 @@ class DashboardAPIView(GenericAPIView):
             "overall_tribe": total_tribe,
             "overall_squad": total_squad,
             "recent_staff": recent_staff_data,
+            "last_created_tribe": f'{latest_tribe}d ago',
+            "last_created_squad": f'{latest_squad}d ago',
         }
 
         return Response(data, status=status.HTTP_200_OK)
