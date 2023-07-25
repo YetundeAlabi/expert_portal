@@ -16,7 +16,6 @@ from staff_mgt.models import Squad, Staff, Tribe
 def latest_object(MyModel):
     now = timezone.now()
     latest_obj = MyModel.objects.latest("date_created").date_created
-
     days_ago = (now - latest_obj).days
     return days_ago
     
@@ -26,9 +25,7 @@ class DashboardAPIView(GenericAPIView):
     An endpoint to get dashboard paramaters.
     """
     serializer_class = serializers.StaffListSerializer
-    authentication_classes = ()
-    permission_classes = ()
-
+    
     def get(self, request, *args, **kwargs):
         latest_tribe = latest_object(Tribe)
         latest_squad = latest_object(Squad)
