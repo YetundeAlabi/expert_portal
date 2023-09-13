@@ -36,7 +36,8 @@ DEBUG = config("DEBUG", default=0)
 ALLOWED_HOSTS = ["*"]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://expertportal-production.up.railway.app'
+    'https://expertportal-production.up.railway.app',
+    'https://web-production-029d.up.railway.app'
     
 ]
 # Application definition

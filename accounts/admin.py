@@ -1,7 +1,7 @@
 from django.contrib import admin
-from accounts.models import User, ActivityLog
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
+from accounts.models import User, ActivityLog
 
 # Register your models here.
 class UserAdmin(BaseUserAdmin):
