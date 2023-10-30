@@ -79,6 +79,7 @@ class ForgetPasswordView(GenericAPIView):
             #send email
             subject = "Password Reset Verification Pin"
             body = f'Your verification pin is {otp}'
+            print(body)
             data = {"email_body": body, "to_email": email,
                     "email_subject": subject}
             send_email(data)
